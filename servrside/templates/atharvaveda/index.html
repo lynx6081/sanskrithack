@@ -770,7 +770,7 @@
 
         async function generateQuiz() {
             try {
-                const response = await fetch('/api/generate-quiz', {
+                const response = await fetch('/api/atharvaveda/generate-quiz', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -849,7 +849,7 @@
             if (!currentQuiz) return;
 
             try {
-                const response = await fetch('/api/submit-quiz', {
+                const response = await fetch('/api/atharvaveda/submit-quiz',{
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

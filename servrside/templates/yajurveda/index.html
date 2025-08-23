@@ -698,7 +698,7 @@
                 processedText = processedText
                     .replace(/🔥 \*\*Fire Sacrifices\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Fire Sacrifices\')">🔥 <strong>Fire Sacrifices</strong></button>')
                     .replace(/📜 \*\*Ritual Procedures\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Ritual Procedures\')">📜 <strong>Ritual Procedures</strong></button>')
-                    .replace(/🛏️ \*\*Altar Construction\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Altar Construction\')">🛏️ <strong>Altar Construction</strong></button>')
+                    .replace(/🛕 \*\*Altar Construction\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Altar Construction\')">🛕 <strong>Altar Construction</strong></button>')
                     .replace(/🕉️ \*\*Sacred Mantras\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Sacred Mantras\')">🕉️ <strong>Sacred Mantras</strong></button>')
                     .replace(/👨‍🔬 \*\*Priestly Duties\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Priestly Duties\')">👨‍🔬 <strong>Priestly Duties</strong></button>')
                     .replace(/🥄 \*\*Offerings & Implements\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Offerings & Implements\')">🥄 <strong>Offerings & Implements</strong></button>')
@@ -770,7 +770,7 @@
 
         async function generateQuiz() {
             try {
-                const response = await fetch('/api/generate-quiz', {
+                const response = await fetch('/api/yajurveda/generate-quiz', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -816,7 +816,7 @@
 
             quizContent.innerHTML = `
                 <div style="margin-bottom: 15px;">
-                    <h3 style="color: #ff7b00; margin-bottom: 5px;">🔍 Quiz Topics:</h3>
+                    <h3 style="color: #ff7b00; margin-bottom: 5px;">📝 Quiz Topics:</h3>
                     <p style="font-size: 0.9em; color: #666;">${topics.join(', ')}</p>
                 </div>
                 ${questionsHtml}
@@ -849,7 +849,7 @@
             if (!currentQuiz) return;
 
             try {
-                const response = await fetch('/api/submit-quiz', {
+                const response = await fetch('/api/yajurveda/submit-quiz', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

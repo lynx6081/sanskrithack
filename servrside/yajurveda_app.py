@@ -269,13 +269,13 @@ def should_trigger_quiz(session_id):
         user_quiz_states[session_id] = {
             'message_count': 0,
             'last_quiz_at': 0,
-            'quiz_frequency': 4  # Every 4 meaningful exchanges
+            'quiz_frequency': 3  # Every 3 meaningful exchanges (matching Rigveda)
         }
     
     state = user_quiz_states[session_id]
     state['message_count'] += 1
     
-    # Trigger quiz every 4 meaningful exchanges
+    # Trigger quiz every 3 meaningful exchanges
     if state['message_count'] - state['last_quiz_at'] >= state['quiz_frequency']:
         state['last_quiz_at'] = state['message_count']
         return True
@@ -439,7 +439,7 @@ def home():
         
     except FileNotFoundError:
         return """
-        <h1>Yajurveda Chatbot Backend with Quiz Feature</h1>
+        <h1>🔥 Yajurveda Chatbot Backend with Quiz Feature</h1>
         <p>Backend is running! Frontend HTML file not found.</p>
         <p>Expected locations checked:</p>
         <ul>
@@ -452,21 +452,15 @@ def home():
         <p>API endpoints available:</p>
         <ul>
             <li>POST /api/yajurveda/ask - For chat messages</li>
-            <li>POST /api/ask - Alternative chat endpoint</li>
-            <li>POST /api/generate-quiz - For quiz generation</li>
-            <li>POST /api/submit-quiz - For quiz submission</li>
+            <li>POST /api/yajurveda/generate-quiz - For quiz generation</li>
+            <li>POST /api/yajurveda/submit-quiz - For quiz submission</li>
             <li>GET /api/health - Health check</li>
         </ul>
         <p>Current working directory: """ + os.getcwd() + """</p>
         """
 
-# API Routes - Make sure these are properly defined
+# Fixed API endpoints to match the Rigveda pattern exactly
 @app.route('/api/yajurveda/ask', methods=['POST'])
-def api_yajurveda_ask():
-    """API endpoint for asking questions (frontend route)"""
-    return api_ask()
-
-@app.route('/api/ask', methods=['POST'])
 def api_ask():
     """API endpoint for asking questions"""
     try:
@@ -513,9 +507,9 @@ def api_ask():
         traceback.print_exc()
         return jsonify({'error': f'Internal server error: {str(e)}'}), 500
 
-@app.route('/api/generate-quiz', methods=['POST'])
+@app.route('/api/yajurveda/generate-quiz', methods=['POST'])
 def api_generate_quiz():
-    """API endpoint for generating quiz with improved error handling"""
+    """API endpoint for generating quiz - Fixed to match Rigveda pattern"""
     try:
         print("✅ Generate quiz endpoint called")
         
@@ -529,10 +523,9 @@ def api_generate_quiz():
         print(f"🎯 Generating quiz for session: {session_id}")
         print(f"📊 Available sessions: {list(conversations.keys())}")
         
-        # Check if session exists
+        # Check if session exists, if not create default
         if session_id not in conversations:
             print("⚠ Creating default conversation for quiz")
-            # Create a default conversation if none exists
             conversations[session_id] = [
                 {
                     'timestamp': datetime.now().isoformat(),
@@ -546,63 +539,40 @@ def api_generate_quiz():
                 }
             ]
         
-        # Check if conversation has content
         conversation_history = conversations[session_id]
-        if not conversation_history:
-            return jsonify({'error': 'Conversation history is empty'}), 400
-        
         print(f"💬 Conversation length: {len(conversation_history)}")
         
         # Extract topics from conversation
-        try:
-            topics = extract_topics_from_conversation(conversation_history)
-            print(f"🏷️ Extracted topics: {topics}")
-        except Exception as e:
-            print(f"⚠ Error extracting topics: {e}")
-            topics = ["ritual procedures", "sacred mantras", "fire ceremonies"]
+        topics = extract_topics_from_conversation(conversation_history)
+        print(f"🏷️ Extracted topics: {topics}")
         
         if not topics:
             topics = ["ritual procedures", "sacred mantras", "fire ceremonies"]
         
         # Generate quiz
-        try:
-            print("🔄 Generating quiz...")
-            quiz_data = generate_mcq_quiz(topics, conversation_history)
-            print(f"✅ Generated quiz successfully with {len(quiz_data.get('questions', []))} questions")
-        except Exception as e:
-            print(f"❌ Error generating quiz: {e}")
-            import traceback
-            traceback.print_exc()
-            return jsonify({'error': f'Failed to generate quiz: {str(e)}'}), 500
+        print("🔥 Generating quiz...")
+        quiz_data = generate_mcq_quiz(topics, conversation_history)
         
         if not quiz_data:
-            return jsonify({'error': 'Quiz generation returned empty result'}), 500
+            return jsonify({'error': 'Failed to generate quiz'}), 500
         
-        # Validate quiz structure
-        if not isinstance(quiz_data, dict) or 'questions' not in quiz_data:
-            return jsonify({'error': 'Invalid quiz format'}), 500
-            
-        if not isinstance(quiz_data['questions'], list) or len(quiz_data['questions']) == 0:
-            return jsonify({'error': 'No questions in generated quiz'}), 500
-        
-        print(f"🎉 Quiz successfully created with {len(quiz_data['questions'])} questions")
+        print(f"🎉 Quiz successfully created with {len(quiz_data.get('questions', []))} questions")
         
         return jsonify({
             'quiz': quiz_data,
             'topics': topics,
-            'session_id': session_id,
-            'quiz_length': len(quiz_data['questions'])
+            'session_id': session_id
         })
         
     except Exception as e:
-        print(f"💥 Unexpected error generating quiz: {e}")
+        print(f"💥 Error generating quiz: {e}")
         import traceback
         traceback.print_exc()
-        return jsonify({'error': f'Unexpected error: {str(e)}'}), 500
+        return jsonify({'error': f'Failed to generate quiz: {str(e)}'}), 500
 
-@app.route('/api/submit-quiz', methods=['POST'])
+@app.route('/api/yajurveda/submit-quiz', methods=['POST'])
 def api_submit_quiz():
-    """API endpoint for submitting quiz answers with improved validation"""
+    """API endpoint for submitting quiz answers - Fixed to match Rigveda pattern"""
     try:
         print("✅ Submit quiz endpoint called")
         
@@ -700,14 +670,13 @@ def health_check():
         'working_directory': os.getcwd(),
         'available_routes': [
             'GET /',
-            'POST /api/ask',
             'POST /api/yajurveda/ask', 
-            'POST /api/generate-quiz',
-            'POST /api/submit-quiz',
+            'POST /api/yajurveda/generate-quiz',
+            'POST /api/yajurveda/submit-quiz',
             'GET /api/health'
         ]
     }
-    print(f"🏥 Health check: {status['status']}")
+    print(f"🩺 Health check: {status['status']}")
     return jsonify(status)
 
 # Route debugging function
@@ -721,10 +690,9 @@ if __name__ == '__main__':
     print("🌐 Frontend will be available at http://localhost:5000")
     print("🔌 API available at:")
     print("   - GET / (Frontend)")
-    print("   - POST /api/ask")
-    print("   - POST /api/yajurveda/ask")  
-    print("   - POST /api/generate-quiz")
-    print("   - POST /api/submit-quiz")
+    print("   - POST /api/yajurveda/ask")
+    print("   - POST /api/yajurveda/generate-quiz")
+    print("   - POST /api/yajurveda/submit-quiz")
     print("   - GET /api/health")
     
     # Print registered routes for debugging
