@@ -29,7 +29,7 @@ def home():
             return f.read()
     except FileNotFoundError:
         return """
-        <h1>ðŸ•‰ï¸ Vedic Wisdom Hub</h1>
+        <h1>🕉️ Vedic Wisdom Hub</h1>
         <p>Welcome to the Vedic Learning Platform!</p>
         <p>Please create <code>templates/vedas_landing.html</code> with the main landing page.</p>
         <ul>
@@ -56,33 +56,33 @@ def serve_veda_page(veda_name, icon):
         <p>{veda_name.title()} tutor files not found!</p>
         <p>Please create the {veda_name.title()} tutor files in <code>templates/{veda_name}/</code></p>
         <p>Expected files: <code>index.html</code> or <code>enhanced_index.html</code></p>
-        <p><a href="/">â† Back to Vedas Hub</a></p>
+        <p><a href="/">← Back to Vedas Hub</a></p>
         """
 
 @app.route('/rigveda')
 def rigveda_tutor():
     """Serve the Rigveda tutor page"""
-    return serve_veda_page('rigveda', 'ðŸ"¥')
+    return serve_veda_page('rigveda', '🔥')
 
 @app.route('/samaveda')
 def samaveda_tutor():
     """Serve the Samaveda tutor page"""
-    return serve_veda_page('samaveda', 'ðŸŽµ')
+    return serve_veda_page('samaveda', '🎵')
 
 @app.route('/yajurveda')
 def yajurveda_tutor():
     """Serve the Yajurveda tutor page"""
-    return serve_veda_page('yajurveda', 'ðŸ"±')
+    return serve_veda_page('yajurveda', '🔱')
 
 @app.route('/atharvaveda')
 def atharvaveda_tutor():
     """Serve the Atharvaveda tutor page"""
-    return serve_veda_page('atharvaveda', 'ðŸŒ¿')
+    return serve_veda_page('atharvaveda', '🌿')
 
 def create_api_routes(veda_name):
     """Create API routes for a specific Veda"""
     
-    @app.route(f'/api/{veda_name}/ask', methods=['POST'])
+    @app.route(f'/api/{veda_name}/ask', methods=['POST'], endpoint=f'{veda_name}_ask')
     def veda_api_ask():
         """API endpoint for asking questions"""
         veda_app = load_veda_app(veda_name)
@@ -132,7 +132,7 @@ def create_api_routes(veda_name):
                 'details': str(e)
             }), 500
     
-    @app.route(f'/api/{veda_name}/generate-quiz', methods=['POST'])
+    @app.route(f'/api/{veda_name}/generate-quiz', methods=['POST'], endpoint=f'{veda_name}_generate_quiz')
     def veda_api_generate_quiz():
         """API endpoint for generating quiz"""
         veda_app = load_veda_app(veda_name)
@@ -174,7 +174,7 @@ def create_api_routes(veda_name):
                 'details': str(e)
             }), 500
     
-    @app.route(f'/api/{veda_name}/submit-quiz', methods=['POST'])
+    @app.route(f'/api/{veda_name}/submit-quiz', methods=['POST'], endpoint=f'{veda_name}_submit_quiz')
     def veda_api_submit_quiz():
         """API endpoint for submitting quiz"""
         try:
@@ -209,13 +209,13 @@ def create_api_routes(veda_name):
             
             # Generate feedback
             if score_percentage >= 80:
-                feedback = f"ðŸŽ‰ Excellent work! You have a great understanding of {veda_name.title()} wisdom!"
+                feedback = f"🎉 Excellent work! You have a great understanding of {veda_name.title()} wisdom!"
             elif score_percentage >= 60:
-                feedback = f"ðŸ' Well done! You're making good progress in your {veda_name.title()} studies!"
+                feedback = f"👏 Well done! You're making good progress in your {veda_name.title()} studies!"
             elif score_percentage >= 40:
-                feedback = f"ðŸ'ª Good effort! Keep exploring and learning more about {veda_name.title()}!"
+                feedback = f"💪 Good effort! Keep exploring and learning more about {veda_name.title()}!"
             else:
-                feedback = f"ðŸ\"š Don't worry! Learning takes time. Let's continue our {veda_name.title()} journey together!"
+                feedback = f"📚 Don't worry! Learning takes time. Let's continue our {veda_name.title()} journey together!"
             
             return jsonify({
                 'score': correct_count,
@@ -300,11 +300,11 @@ def about():
     </head>
     <body>
         <div class="container">
-            <a href="/" class="back-link">â† Back to Home</a>
-            <h1>ðŸ•‰ï¸ About Vedic Wisdom Hub</h1>
+            <a href="/" class="back-link">← Back to Home</a>
+            <h1>🕉️ About Vedic Wisdom Hub</h1>
             <p>Welcome to the future of Vedic learning! Our platform uses advanced AI technology to make ancient Sanskrit texts accessible to modern learners.</p>
             
-            <h2>ðŸ"š What We Offer:</h2>
+            <h2>📚 What We Offer:</h2>
             <ul>
                 <li><strong>Interactive AI Tutors</strong> - Personalized guidance through ancient texts</li>
                 <li><strong>Smart Quizzes</strong> - Test your knowledge with adaptive questions</li>
@@ -313,15 +313,15 @@ def about():
                 <li><strong>All Four Vedas</strong> - Complete coverage of Rigveda, Samaveda, Yajurveda, and Atharvaveda</li>
             </ul>
             
-            <h2>ðŸŽ¯ Our Mission:</h2>
+            <h2>🎯 Our Mission:</h2>
             <p>To bridge the gap between ancient wisdom and modern learning, making all four Vedas accessible to seekers worldwide through AI-powered tutoring.</p>
             
-            <h2>ðŸ•‰ï¸ The Four Vedas:</h2>
+            <h2>🕉️ The Four Vedas:</h2>
             <ul>
-                <li><strong>Rigveda ðŸ"¥</strong> - Hymns and praises to deities</li>
-                <li><strong>Samaveda ðŸŽµ</strong> - Melodies and chants for rituals</li>
-                <li><strong>Yajurveda ðŸ"±</strong> - Ritual procedures and mantras</li>
-                <li><strong>Atharvaveda ðŸŒ¿</strong> - Practical wisdom and daily life</li>
+                <li><strong>Rigveda 🔥</strong> - Hymns and praises to deities</li>
+                <li><strong>Samaveda 🎵</strong> - Melodies and chants for rituals</li>
+                <li><strong>Yajurveda 🔱</strong> - Ritual procedures and mantras</li>
+                <li><strong>Atharvaveda 🌿</strong> - Practical wisdom and daily life</li>
             </ul>
         </div>
     </body>
@@ -349,13 +349,13 @@ def veda_status():
     return jsonify(status)
 
 if __name__ == '__main__':
-    print("ðŸ•‰ï¸ Starting Vedic Wisdom Hub - All Vedas Platform...")
-    print("ðŸŒ Main platform available at http://localhost:5000")
-    print("ðŸ\"¥ Rigveda tutor: http://localhost:5000/rigveda")
-    print("ðŸŽµ Samaveda tutor: http://localhost:5000/samaveda")
-    print("ðŸ\"± Yajurveda tutor: http://localhost:5000/yajurveda")
-    print("ðŸŒ¿ Atharvaveda tutor: http://localhost:5000/atharvaveda")
-    print("ðŸ\"Œ Health check: http://localhost:5000/api/health")
-    print("ðŸ\"Š Status check: http://localhost:5000/api/veda-status")
+    print("🕉️ Starting Vedic Wisdom Hub - All Vedas Platform...")
+    print("🌐 Main platform available at http://localhost:5000")
+    print("🔥 Rigveda tutor: http://localhost:5000/rigveda")
+    print("🎵 Samaveda tutor: http://localhost:5000/samaveda")
+    print("🔱 Yajurveda tutor: http://localhost:5000/yajurveda")
+    print("🌿 Atharvaveda tutor: http://localhost:5000/atharvaveda")
+    print("📌 Health check: http://localhost:5000/api/health")
+    print("📊 Status check: http://localhost:5000/api/veda-status")
     
     app.run(debug=True, host='0.0.0.0', port=5000)

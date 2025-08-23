@@ -33,8 +33,8 @@ def load_data():
     global index, verses
     try:
         # Adjust paths according to your file structure
-        index = faiss.read_index("./database/samaveda.index")
-        with open("./database/samaveda_meta.pkl", "rb") as f:
+        index = faiss.read_index("./databse/samaveda.index")
+        with open("./databse/samaveda_meta.pkl", "rb") as f:
             verses = pickle.load(f)
         print("✅ Samaveda index and metadata loaded successfully")
         return True
