@@ -91,6 +91,25 @@
             z-index: 1;
         }
 
+        .back-to-hub {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .back-to-hub:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-3px);
+        }
+
         .quiz-header {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
@@ -491,7 +510,8 @@
         <!-- Chat Section -->
         <div class="chat-container">
             <div class="header">
-                <h1>🕉️ Rigveda Guru</h1>
+                <a href="/" class="back-to-hub">← Vedas Hub</a>
+                <h1>🔥 Rigveda Guru</h1>
                 <p>Your passionate guide to ancient wisdom & timeless knowledge</p>
             </div>
             
@@ -624,7 +644,7 @@
             addMessage(query, 'user');
 
             try {
-                // Call backend API
+                // Call backend API with correct endpoint
                 const response = await fetch('/api/rigveda/ask', {
                     method: 'POST',
                     headers: {
@@ -745,7 +765,7 @@
 
         async function generateQuiz() {
             try {
-                const response = await fetch('/api/generate-quiz', {
+                const response = await fetch('/api/rigveda/generate-quiz', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -824,7 +844,7 @@
             if (!currentQuiz) return;
 
             try {
-                const response = await fetch('/api/submit-quiz', {
+                const response = await fetch('/api/rigveda/submit-quiz', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
