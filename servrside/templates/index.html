@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rigveda Wisdom - Ancient Knowledge at Your Fingertips</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .chat-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 900px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="30" cy="80" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="70" cy="70" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+            100% { transform: translateY(0px) rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: linear-gradient(145deg, #f8f9ff, #e8ecff);
+        }
+
+        .message {
+            margin-bottom: 25px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            text-align: right;
+        }
+
+        .user-bubble {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 25px 25px 5px 25px;
+            max-width: 70%;
+            font-size: 1.05em;
+            line-height: 1.5;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .bot-message {
+            text-align: left;
+        }
+
+        .bot-bubble {
+            display: inline-block;
+            background: white;
+            color: #2c3e50;
+            padding: 20px 25px;
+            border-radius: 25px 25px 25px 5px;
+            max-width: 85%;
+            font-size: 1.05em;
+            line-height: 1.6;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .verse-reference {
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 500;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .input-container {
+            padding: 25px 30px;
+            background: white;
+            border-top: 1px solid #e0e6ed;
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        #userInput {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e6ed;
+            border-radius: 25px;
+            font-size: 1.05em;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+            min-height: 50px;
+            resize: none;
+            font-family: inherit;
+        }
+
+        #userInput:focus {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+        }
+
+        #userInput::placeholder {
+            color: #999;
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .send-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .send-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #666;
+            margin-top: 50px;
+            padding: 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .welcome-message h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .welcome-message p {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .example-queries {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .example-query {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .example-query:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 90vh;
+                margin: 10px;
+                border-radius: 16px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .chat-messages {
+                padding: 20px;
+            }
+            
+            .input-container {
+                padding: 20px;
+            }
+            
+            .user-bubble, .bot-bubble {
+                max-width: 90%;
+                padding: 12px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="header">
+            <h1>🕉️ Rigveda Wisdom</h1>
+            <p>Discover ancient knowledge through AI-powered search</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message">
+                <h3>Welcome to Rigveda Wisdom</h3>
+                <p>Ask me anything about the Rigveda and I'll search through ancient verses to provide you with authentic answers. Each response includes relevant verse references.</p>
+                <div class="example-queries">
+                    <button class="example-query" onclick="askExample('What does Rigveda say about Agni?')">About Agni</button>
+                    <button class="example-query" onclick="askExample('What is the nature of Indra?')">About Indra</button>
+                    <button class="example-query" onclick="askExample('What does Rigveda say about creation?')">About Creation</button>
+                    <button class="example-query" onclick="askExample('What is soma in Rigveda?')">About Soma</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <div class="input-wrapper">
+                <textarea 
+                    id="userInput" 
+                    placeholder="Ask about Rigvedic wisdom... (e.g., 'What does Rigveda say about dharma?')"
+                    rows="1"
+                    maxlength="500"
+                ></textarea>
+            </div>
+            <button class="send-button" id="sendButton" onclick="sendMessage()">
+                <span id="sendIcon">➤</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let isLoading = false;
+
+        // Auto-resize textarea
+        document.getElementById('userInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        // Send message on Enter (but allow Shift+Enter for new lines)
+        document.getElementById('userInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function askExample(query) {
+            document.getElementById('userInput').value = query;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            if (isLoading) return;
+
+            const input = document.getElementById('userInput');
+            const query = input.value.trim();
+            
+            if (!query) return;
+
+            // Clear input and show loading
+            input.value = '';
+            input.style.height = 'auto';
+            setLoading(true);
+
+            // Add user message
+            addMessage(query, 'user');
+
+            try {
+                // Call your backend API
+                const response = await fetch('/api/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        query: query,
+                        topk: 5  // You can make this configurable
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Add bot response
+                addMessage(data.answer, 'bot', data.verses);
+
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Sorry, I encountered an error while searching the Rigveda. Please try again.', 'bot');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function addMessage(text, sender, verses = null) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+
+            if (sender === 'user') {
+                messageDiv.innerHTML = `<div class="user-bubble">${escapeHtml(text)}</div>`;
+            } else {
+                let versesHtml = '';
+                if (verses && verses.length > 0) {
+                    versesHtml = verses.map(v => 
+                        `<div class="verse-reference">RV ${v.mandala}.${v.sukta}.${v.verse}</div>`
+                    ).join('');
+                }
+                messageDiv.innerHTML = `
+                    <div class="bot-bubble">
+                        ${escapeHtml(text)}
+                        ${versesHtml}
+                    </div>
+                `;
+            }
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Remove welcome message if it exists
+            const welcomeMessage = document.querySelector('.welcome-message');
+            if (welcomeMessage) {
+                welcomeMessage.remove();
+            }
+        }
+
+        function setLoading(loading) {
+            isLoading = loading;
+            const sendButton = document.getElementById('sendButton');
+            const sendIcon = document.getElementById('sendIcon');
+            
+            if (loading) {
+                sendIcon.innerHTML = '<div class="loading"></div>';
+                sendButton.disabled = true;
+            } else {
+                sendIcon.innerHTML = '➤';
+                sendButton.disabled = false;
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML.replace(/\n/g, '<br>');
+        }
+
+        // Focus input on load
+        window.addEventListener('load', () => {
+            document.getElementById('userInput').focus();
+        });
+    </script>
+</body>
+</html>

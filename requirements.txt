@@ -1,0 +1,9 @@
+bs4
+indic-transliteration
+sentence_transformers
+faiss-cpu
+numpy
+openai
+dotenv
+flask
+flask-cors
