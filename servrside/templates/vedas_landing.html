@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background: rgb(255, 255, 255);
             min-height: 100vh;
             overflow-x: hidden;
         }
@@ -30,7 +30,7 @@
 
         .star {
             position: absolute;
-            background: white;
+            background: black;
             border-radius: 50%;
             animation: twinkle 3s infinite;
         }
@@ -40,7 +40,7 @@
         }
 
         @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
+            0%, 100% { opacity: 0.2; transform: scale(1); }
             50% { opacity: 1; transform: scale(1.2); }
         }
 
@@ -49,8 +49,8 @@
             width: 60px;
             height: 60px;
             opacity: 0.1;
-            animation: float 15s infinite linear;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="white" stroke-width="2"/><circle cx="50" cy="50" r="30" fill="none" stroke="white" stroke-width="1"/><circle cx="50" cy="50" r="15" fill="none" stroke="white" stroke-width="1"/><path d="M50,5 L55,20 L50,35 L45,20 Z" fill="white"/><path d="M95,50 L80,55 L65,50 L80,45 Z" fill="white"/><path d="M50,95 L45,80 L50,65 L55,80 Z" fill="white"/><path d="M5,50 L20,45 L35,50 L20,55 Z" fill="white"/></svg>') center/contain no-repeat;
+            animation: float 15s infinite ease-in;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="%23111" stroke-width="2"/><circle cx="50" cy="50" r="30" fill="none" stroke="%23111" stroke-width="1"/><circle cx="50" cy="50" r="15" fill="none" stroke="%23111" stroke-width="1"/><path d="M50,5 L55,20 L50,35 L45,20 Z" fill="%23111"/><path d="M95,50 L80,55 L65,50 L80,45 Z" fill="%23111"/><path d="M50,95 L45,80 L50,65 L55,80 Z" fill="%23111"/><path d="M5,50 L20,45 L35,50 L20,55 Z" fill="%23111"/></svg>') center/contain no-repeat;
         }
 
         @keyframes float {
@@ -74,56 +74,32 @@
         .header {
             text-align: center;
             margin-bottom: 60px;
-            animation: fadeInUp 1s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .main-title {
             font-size: 4em;
             font-weight: 800;
-            color: white;
+            color: rgb(60, 55, 55);
             margin-bottom: 20px;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(45deg, #ffd89b, #19547b, #ff9a56);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 6s ease-in-out infinite;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
         }
 
         .subtitle {
             font-size: 1.4em;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(69, 61, 61, 0.9);
             margin-bottom: 10px;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         .tagline {
             font-size: 1.1em;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(71, 63, 63, 0.8);
             font-style: italic;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         .vedas-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
             gap: 30px;
             max-width: 1200px;
             width: 100%;
@@ -131,19 +107,18 @@
         }
 
         .veda-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 25px;
-            padding: 40px 30px;
+            background: rgba(129, 130, 125, 0.1);
+            border-radius: 15px;
+            padding: 20px 20px;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(15px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(42, 40, 40, 0.3);
+            transition: all 0.2s linear;
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            animation: slideInUp 1s ease-out;
-            animation-fill-mode: both;
+            /* animation: slideInUp 1s ease-out; */
+            /* animation-fill-mode: both; */
         }
 
         .veda-card:nth-child(1) { animation-delay: 0.2s; }
@@ -154,7 +129,7 @@
         @keyframes slideInUp {
             from {
                 opacity: 0;
-                transform: translateY(50px);
+                transform: translateY(10px);
             }
             to {
                 opacity: 1;
@@ -162,7 +137,7 @@
             }
         }
 
-        .veda-card::before {
+        /* .veda-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -171,25 +146,14 @@
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s;
-        }
+        } */
 
-        .veda-card:hover::before {
+        /* .veda-card:hover::before {
             left: 100%;
-        }
+        } */
 
         .veda-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
-            border-color: rgba(255, 255, 255, 0.6);
-        }
-
-        .veda-card.available {
-            border-left: 5px solid #27ae60;
-        }
-
-        .veda-card.loading {
-            opacity: 0.8;
-            border-left: 5px solid #3498db;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
         }
 
         .veda-icon {
@@ -215,10 +179,13 @@
 
         .veda-stats {
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
             margin-bottom: 25px;
-            padding: 15px;
-            background: rgba(102, 126, 234, 0.1);
+            padding-bottom: 15px;
+            padding-top: 15px;
+            padding-left: 40px;
+            padding-right: 40px;
+            background: rgba(55, 87, 231, 0.1);
             border-radius: 15px;
         }
 
@@ -233,17 +200,17 @@
         }
 
         .stat-label {
-            font-size: 0.9em;
+            font-size: 1.1em;
             color: #666;
             margin-top: 5px;
         }
 
         .action-button {
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            background: rgb(9, 186, 9);
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
+            padding: 10px 10px;
+            border-radius: 13px;
             font-size: 1.1em;
             font-weight: 600;
             cursor: pointer;
@@ -255,8 +222,8 @@
         }
 
         .action-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.4);
+            background: rgb(5, 174, 5);
+            /* box-shadow: 0 10px 30px rgba(39, 174, 96, 0.4); */
         }
 
         .action-button.loading {
@@ -298,15 +265,15 @@
 
         .footer {
             text-align: center;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(48, 44, 44, 0.8);
             margin-top: 40px;
-            animation: fadeIn 2s ease-out 1s both;
+            animation: fadeIn 1.9s linear;
         }
 
         .footer h3 {
             font-size: 1.5em;
             margin-bottom: 10px;
-            color: white;
+            color: rgb(62, 63, 5);
         }
 
         .footer p {
@@ -320,8 +287,8 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
+            background: rgba(231, 237, 233, 0.8);
+            color: green;
             padding: 10px 15px;
             border-radius: 20px;
             font-size: 0.9em;
@@ -365,32 +332,7 @@
             }
         }
 
-        /* Particle Effects */
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            animation: particleFloat 8s infinite linear;
-        }
-
-        @keyframes particleFloat {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-10vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
+       
     </style>
 </head>
 <body>
@@ -405,7 +347,8 @@
     <div class="container">
         <!-- Header -->
         <header class="header">
-            <h1 class="main-title">🕉️ Vedic Wisdom Hub</h1>
+            <h1>🕉️</h1>
+            <h1 class="main-title"> Vedic Wisdom Hub</h1>
             <p class="subtitle">Journey Through Ancient Sacred Knowledge</p>
             <p class="tagline">All four Vedas are now available - Choose your path to enlightenment</p>
         </header>
@@ -521,7 +464,7 @@
             </p>
         </footer>
     </div>
-
+    
     <script>
         // Create cosmic background with stars and floating elements
         function createCosmicBackground() {
@@ -548,7 +491,7 @@
                 cosmicBg.appendChild(mandala);
             }
             
-            // Create floating particles
+            // // Create floating particles
             setInterval(() => {
                 if (document.querySelectorAll('.particle').length < 20) {
                     const particle = document.createElement('div');
@@ -764,5 +707,6 @@
             }
         });
     </script>
+    
 </body>
 </html>

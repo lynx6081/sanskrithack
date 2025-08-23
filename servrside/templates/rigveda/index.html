@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: rgb(249, 248, 248);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -47,11 +47,11 @@
             max-width: 450px;
             display: flex;
             flex-direction: column;
-            background: linear-gradient(145deg, #f8f9ff, #e8ecff);
+            background: rgb(241, 237, 237);
         }
 
         .header {
-            background: linear-gradient(135deg, #ff9a56, #ff6b6b);
+            background: rgb(206, 114, 9);
             color: white;
             padding: 25px 30px;
             text-align: center;
@@ -95,23 +95,23 @@
             position: absolute;
             top: 15px;
             left: 15px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(193, 231, 69, 0.2);
             color: white;
             text-decoration: none;
             padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
+            border-radius: 10px;
+            font-size: 1.2em;
             transition: all 0.3s ease;
             z-index: 2;
         }
 
         .back-to-hub:hover {
             background: rgba(255, 255, 255, 0.3);
-            transform: translateX(-3px);
+            transform: translateX(-1.5px);
         }
 
         .quiz-header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: rgb(206, 114, 9);
             color: white;
             padding: 20px;
             text-align: center;
@@ -163,10 +163,10 @@
 
         .user-bubble {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #be7f26, #d98d1c);
             color: white;
             padding: 15px 20px;
-            border-radius: 25px 25px 5px 25px;
+            border-radius: 10px 10px 5px 10px;
             max-width: 70%;
             font-size: 1.05em;
             line-height: 1.5;
@@ -182,7 +182,7 @@
             background: white;
             color: #2c3e50;
             padding: 20px 25px;
-            border-radius: 25px 25px 25px 5px;
+            border-radius: 10px 10px 5px 10px;
             max-width: 85%;
             font-size: 1.05em;
             line-height: 1.6;
@@ -196,7 +196,7 @@
             font-weight: 500;
             margin-top: 8px;
             padding: 8px 12px;
-            background: rgba(255, 107, 107, 0.1);
+            background: rgba(183, 127, 6, 0.1);
             border-radius: 12px;
             display: inline-block;
         }
@@ -232,7 +232,7 @@
         #userInput:focus {
             border-color: #667eea;
             background: white;
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 0 20px rgba(180, 130, 4, 0.2);
         }
 
         #userInput::placeholder {
@@ -252,7 +252,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            box-shadow: 0 4px 15px rgba(233, 255, 107, 0.3);
         }
 
         .send-button:hover:not(:disabled) {
@@ -290,10 +290,10 @@
         }
 
         .example-query {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #cc8b11, #dd9611);
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 8px 8px;
+            border-radius: 10px;
             font-size: 0.9em;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -307,7 +307,7 @@
 
         /* Quiz Styles */
         .quiz-notification {
-            background: linear-gradient(135deg, #ffd89b, #19547b);
+            background: black;
             color: white;
             padding: 15px;
             border-radius: 15px;
@@ -330,7 +330,7 @@
         }
 
         .quiz-question {
-            background: white;
+            background: rgb(49, 46, 46);
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 20px;
@@ -339,7 +339,7 @@
 
         .question-text {
             font-weight: 600;
-            color: #2c3e50;
+            color: #e6eff8;
             margin-bottom: 15px;
             font-size: 1.1em;
             line-height: 1.4;
@@ -359,14 +359,14 @@
         }
 
         .quiz-option:hover {
-            border-color: #667eea;
+            border-color: #c1781a;
             background: white;
         }
 
         .quiz-option.selected {
-            background: #667eea;
+            background: #c1781a;
             color: white;
-            border-color: #667eea;
+            border-color: #c1781a;
         }
 
         .quiz-option.correct {
@@ -382,7 +382,7 @@
         }
 
         .quiz-submit-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #c1781a, #966812);
             color: white;
             border: none;
             padding: 12px 24px;
@@ -417,7 +417,7 @@
         .quiz-score {
             font-size: 2em;
             font-weight: 700;
-            color: #667eea;
+            color: #c1781a;
             margin-bottom: 10px;
         }
 
@@ -722,6 +722,26 @@
                     .replace(/⚖️ \*\*Dharma & Ethics\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Dharma & Ethics\')">⚖️ <strong>Dharma & Ethics</strong></button>');
             }
             
+            // Handle follow-up questions format - THIS IS THE MISSING PART
+            const followUpRegex = /\*\*Follow-up Questions:\*\*\s*\n((?:• .+\?\s*\n?)+)/;
+            const followUpMatch = processedText.match(followUpRegex);
+
+            if (followUpMatch) {
+                const questionsText = followUpMatch[1];
+                const questions = questionsText.split('\n').filter(q => q.trim().startsWith('•'));
+                
+                let buttonsHtml = '<div style="margin-top: 15px;"><strong>Follow-up Questions:</strong><br><div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px;">';
+                
+                questions.forEach(q => {
+                    const questionText = q.replace('•', '').trim();
+                    if (questionText) {
+                        buttonsHtml += `<button class="example-query" onclick="askFollowUp('${questionText.replace(/'/g, "\\'")}')">• ${questionText}</button>`;
+                    }
+                });
+                
+                buttonsHtml += '</div></div>';
+                processedText = processedText.replace(followUpRegex, buttonsHtml);
+            }
             // Convert markdown formatting to HTML
             return processedText
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
