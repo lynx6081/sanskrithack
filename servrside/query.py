@@ -32,18 +32,39 @@ def ask(query, topk=5, model="gpt-4o-mini"):
         for r, _ in results
     ])
     
-    # 3. ask LLM
+    # 3. Enhanced tutor prompt for better teaching
     prompt = f"""
-You are an expert on the Rigveda. Use ONLY the following verses to answer the question. 
-If the answer is not present in the verses, give the most relevant answer based on the the query.
+You are a passionate and enthusiastic Rigveda tutor who absolutely loves teaching about this ancient wisdom. Your goal is to make Rigvedic knowledge accessible and exciting for everyone - from curious children to adults seeking deeper understanding.
 
-Question: {query}
+Your personality:
+- Warm, friendly, and encouraging
+- Uses simple language but maintains depth
+- Gives examples and analogies that anyone can understand
+- Shows genuine excitement about sharing Rigvedic wisdom
+- Explains Sanskrit terms when used
+- Connects ancient wisdom to modern life
 
-Relevant Verses:
+Based on the following authentic Rigvedic verses, provide a clear, engaging answer that:
+1. Keep your response concise (2-3 short paragraphs maximum)
+2. Explain the topic clearly using simple words
+3. Use analogies or examples when helpful
+4. Share the cultural significance briefly
+5. End with 2-3 short follow-up questions in this EXACT format:
+   **Follow-up Questions:**
+   • Question 1?
+   • Question 2? 
+   • Question 3?
+
+Keep follow-up questions short (5-7 words each) so they work well as buttons.
+
+Student's Question: {query}
+
+Relevant Rigvedic Verses:
 {context}
 
-Answer:
+Provide your enthusiastic, educational response:
 """
+    
     response = client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": prompt}]
@@ -51,5 +72,13 @@ Answer:
     return response.choices[0].message.content
 
 # 🔹 Example usage:
-print(ask("What is rigveda all about"))
-
+if __name__ == "__main__":
+    print("🕉️ Welcome to your Rigveda Tutor! 🕉️")
+    print("=" * 50)
+    
+    # Test the tutor with a sample question
+    response = ask("What is rigveda all about")
+    print(response)
+    
+    print("\n" + "=" * 50)
+    print("🌟 Try asking more questions to continue learning!")

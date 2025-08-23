@@ -6,6 +6,9 @@ import pickle
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
+import json
+from datetime import datetime
+import uuid
 
 # Load environment variables
 load_dotenv()
@@ -20,6 +23,10 @@ client = OpenAI()
 # Global variables for loaded data
 index = None
 verses = None
+
+# In-memory conversation storage (in production, use a proper database)
+conversations = {}
+user_quiz_states = {}
 
 def load_data():
     """Load the FAISS index and verses metadata"""
@@ -52,11 +59,131 @@ def search(query, topk=5):
     D, I = index.search(q, topk)
     return [(verses[i], float(D[0][j])) for j, i in enumerate(I[0])]
 
-def ask(query, topk=5, model="gpt-4o-mini", is_intro=False):
-    """Get answer using RAG (Retrieval Augmented Generation)"""
+def extract_topics_from_conversation(conversation_history):
+    """Extract main topics discussed in the conversation using GPT"""
+    if not conversation_history or len(conversation_history) < 2:
+        return []
+    
+    # Get recent conversation for topic extraction
+    recent_messages = conversation_history[-6:]  # Last 6 messages
+    context = "\n".join([
+        f"{'User' if msg['sender'] == 'user' else 'Tutor'}: {msg['text']}" 
+        for msg in recent_messages
+    ])
+    
+    topic_extraction_prompt = f"""
+Based on this Rigveda tutoring conversation, identify the main topics and concepts discussed. 
+Focus on specific Rigvedic themes, deities, concepts, or practices mentioned.
+
+Conversation:
+{context}
+
+List the main topics as a simple comma-separated list (max 5 topics). Examples:
+Agni, fire rituals, Indra, creation myths, dharma, soma, hymns, cosmic order
+
+Topics discussed:"""
+    
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": topic_extraction_prompt}],
+            max_tokens=100,
+            temperature=0.3
+        )
+        
+        topics_text = response.choices[0].message.content.strip()
+        topics = [topic.strip() for topic in topics_text.split(',') if topic.strip()]
+        return topics[:5]  # Max 5 topics
+        
+    except Exception as e:
+        print(f"Error extracting topics: {e}")
+        return []
+
+def generate_mcq_quiz(topics, conversation_context):
+    """Generate MCQ quiz based on discussed topics"""
+    if not topics:
+        return None
+    
+    topics_str = ", ".join(topics)
+    
+    quiz_prompt = f"""
+You are creating a quiz for a student who has been learning about Rigveda. Based on the topics they discussed: {topics_str}
+
+Create 3 multiple choice questions (easy to moderate level) about these Rigvedic topics. 
+Each question should have 4 options (A, B, C, D) with exactly one correct answer.
+
+Format your response as valid JSON:
+{{
+  "questions": [
+    {{
+      "question": "Question text here?",
+      "options": {{
+        "A": "Option A text",
+        "B": "Option B text", 
+        "C": "Option C text",
+        "D": "Option D text"
+      }},
+      "correct_answer": "A",
+      "explanation": "Brief explanation of why this answer is correct"
+    }}
+  ]
+}}
+
+Focus on:
+- Basic concepts and facts about Rigveda
+- Deities and their attributes  
+- Important themes and symbols
+- Cultural significance
+
+Keep questions clear and educational. Avoid overly complex Sanskrit terms without explanation.
+"""
+    
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": quiz_prompt}],
+            temperature=0.7,
+            max_tokens=800
+        )
+        
+        quiz_text = response.choices[0].message.content.strip()
+        # Remove potential markdown formatting
+        if quiz_text.startswith('```json'):
+            quiz_text = quiz_text.replace('```json', '').replace('```', '').strip()
+        elif quiz_text.startswith('```'):
+            quiz_text = quiz_text.replace('```', '').strip()
+            
+        quiz_data = json.loads(quiz_text)
+        return quiz_data
+        
+    except Exception as e:
+        print(f"Error generating quiz: {e}")
+        return None
+
+def should_trigger_quiz(session_id):
+    """Check if quiz should be triggered based on conversation count"""
+    if session_id not in user_quiz_states:
+        user_quiz_states[session_id] = {
+            'message_count': 0,
+            'last_quiz_at': 0,
+            'quiz_frequency': 4  # Every 4 meaningful exchanges
+        }
+    
+    state = user_quiz_states[session_id]
+    state['message_count'] += 1
+    
+    # Trigger quiz every 4 meaningful exchanges
+    if state['message_count'] - state['last_quiz_at'] >= state['quiz_frequency']:
+        state['last_quiz_at'] = state['message_count']
+        return True
+    
+    return False
+
+def ask(query, topk=5, model="gpt-4o-mini", is_intro=False, session_id=None):
+    """Get answer using RAG with conversation tracking"""
     
     if is_intro:
-        # Special introduction message - no need to search
+        # Special introduction message
         intro_response = """
 🕉️ **Namaste and welcome, dear seeker of wisdom!** 🕉️
 
@@ -77,7 +204,11 @@ Just click on any topic above, or feel free to ask me anything that sparks your 
 
 **What shall we discover together today?** 🌟
 """
-        return intro_response, []
+        return intro_response, [], False
+    
+    # Initialize conversation tracking
+    if session_id and session_id not in conversations:
+        conversations[session_id] = []
     
     # 1. Retrieve relevant verses
     results = search(query, topk=topk)
@@ -96,16 +227,22 @@ Your personality:
 - Warm, friendly, and encouraging
 - Uses simple language but maintains depth
 - Gives examples and analogies that anyone can understand
-- Always follows up with engaging questions to keep the conversation going
 - Shows genuine excitement about sharing Rigvedic wisdom
 - Explains Sanskrit terms when used
 - Connects ancient wisdom to modern life
 
-Based on the following authentic Rigvedic verses, provide a comprehensive, engaging answer that:
-1. Explains the topic clearly and simply
-2. Uses analogies or examples when helpful
-3. Shares the cultural and spiritual significance
-4. Ends with a follow-up question to encourage deeper learning
+Based on the following authentic Rigvedic verses, provide a clear, engaging answer that:
+1. Keep your response concise (2-3 short paragraphs maximum)
+2. Explain the topic clearly using simple words
+3. Use analogies or examples when helpful
+4. Share the cultural significance briefly
+5. End with 2-3 short follow-up questions in this EXACT format:
+   **Follow-up Questions:**
+   • Question 1?
+   • Question 2? 
+   • Question 3?
+
+Keep follow-up questions short (5-7 words each) so they work well as buttons.
 
 Student's Question: {query}
 
@@ -121,7 +258,27 @@ Provide your enthusiastic, educational response:
         messages=[{"role": "user", "content": prompt}]
     )
     
-    return response.choices[0].message.content, [r for r, _ in results]
+    answer = response.choices[0].message.content
+    
+    # 5. Track conversation and check for quiz trigger
+    quiz_triggered = False
+    if session_id:
+        # Add to conversation history
+        conversations[session_id].append({
+            'timestamp': datetime.now().isoformat(),
+            'sender': 'user',
+            'text': query
+        })
+        conversations[session_id].append({
+            'timestamp': datetime.now().isoformat(),
+            'sender': 'bot',
+            'text': answer
+        })
+        
+        # Check if quiz should be triggered
+        quiz_triggered = should_trigger_quiz(session_id)
+    
+    return answer, [r for r, _ in results], quiz_triggered
 
 # Load data when the app starts
 if not load_data():
@@ -130,17 +287,25 @@ if not load_data():
 @app.route('/')
 def home():
     """Serve the frontend"""
-    # Read the HTML file we created
     try:
-        with open('templates/index.html', 'r', encoding='utf-8') as f:
+        # First try to serve the enhanced version with quiz
+        with open('templates/enhanced_index.html', 'r', encoding='utf-8') as f:
             return f.read()
     except FileNotFoundError:
-        # If template file doesn't exist, return a simple message
-        return """
-        <h1>Rigveda Chatbot Backend</h1>
-        <p>Backend is running! Create a templates/index.html file or use the frontend separately.</p>
-        <p>API endpoint: POST /api/ask</p>
-        """
+        try:
+            # Fallback to original index.html
+            with open('templates/index.html', 'r', encoding='utf-8') as f:
+                return f.read()
+        except FileNotFoundError:
+            return """
+            <h1>Rigveda Chatbot Backend with Quiz Feature</h1>
+            <p>Backend is running! Please create either:</p>
+            <ul>
+                <li><code>templates/enhanced_index.html</code> - For full quiz experience</li>
+                <li><code>templates/index.html</code> - For basic chat only</li>
+            </ul>
+            <p>API endpoints: POST /api/ask, POST /api/generate-quiz</p>
+            """
 
 @app.route('/api/ask', methods=['POST'])
 def api_ask():
@@ -150,6 +315,7 @@ def api_ask():
         query = data.get('query', '').strip()
         topk = data.get('topk', 5)
         is_intro = data.get('is_intro', False)
+        session_id = data.get('session_id', 'default')
         
         if not query and not is_intro:
             return jsonify({'error': 'Query is required'}), 400
@@ -157,8 +323,8 @@ def api_ask():
         if not is_intro and (index is None or verses is None):
             return jsonify({'error': 'Database not loaded. Please check server configuration.'}), 500
         
-        # Get answer and relevant verses
-        answer, relevant_verses = ask(query, topk=topk, is_intro=is_intro)
+        # Get answer and check for quiz trigger
+        answer, relevant_verses, quiz_triggered = ask(query, topk=topk, is_intro=is_intro, session_id=session_id)
         
         # Format verse references for frontend
         verses_info = [
@@ -175,12 +341,102 @@ def api_ask():
             'answer': answer,
             'verses': verses_info,
             'query': query,
-            'is_intro': is_intro
+            'is_intro': is_intro,
+            'quiz_triggered': quiz_triggered,
+            'session_id': session_id
         })
         
     except Exception as e:
         print(f"Error in API: {e}")
         return jsonify({'error': 'Internal server error occurred'}), 500
+
+@app.route('/api/generate-quiz', methods=['POST'])
+def api_generate_quiz():
+    """API endpoint for generating quiz"""
+    try:
+        data = request.json
+        session_id = data.get('session_id', 'default')
+        
+        if session_id not in conversations:
+            return jsonify({'error': 'No conversation history found'}), 400
+        
+        # Extract topics from conversation
+        topics = extract_topics_from_conversation(conversations[session_id])
+        
+        if not topics:
+            return jsonify({'error': 'No topics found in conversation'}), 400
+        
+        # Generate quiz
+        quiz_data = generate_mcq_quiz(topics, conversations[session_id])
+        
+        if not quiz_data:
+            return jsonify({'error': 'Failed to generate quiz'}), 500
+        
+        return jsonify({
+            'quiz': quiz_data,
+            'topics': topics,
+            'session_id': session_id
+        })
+        
+    except Exception as e:
+        print(f"Error generating quiz: {e}")
+        return jsonify({'error': 'Failed to generate quiz'}), 500
+
+@app.route('/api/submit-quiz', methods=['POST'])
+def api_submit_quiz():
+    """API endpoint for submitting quiz answers"""
+    try:
+        data = request.json
+        session_id = data.get('session_id', 'default')
+        answers = data.get('answers', {})
+        quiz_questions = data.get('quiz_questions', [])
+        
+        # Calculate score
+        correct_count = 0
+        results = []
+        
+        for i, question in enumerate(quiz_questions):
+            question_id = str(i)
+            user_answer = answers.get(question_id)
+            correct_answer = question['correct_answer']
+            is_correct = user_answer == correct_answer
+            
+            if is_correct:
+                correct_count += 1
+            
+            results.append({
+                'question': question['question'],
+                'user_answer': user_answer,
+                'correct_answer': correct_answer,
+                'is_correct': is_correct,
+                'explanation': question['explanation']
+            })
+        
+        total_questions = len(quiz_questions)
+        score_percentage = (correct_count / total_questions * 100) if total_questions > 0 else 0
+        
+        # Generate encouraging feedback
+        if score_percentage >= 80:
+            feedback = "🎉 Excellent work! You have a great understanding of Rigvedic wisdom!"
+        elif score_percentage >= 60:
+            feedback = "👏 Well done! You're making good progress in your Rigveda studies!"
+        elif score_percentage >= 40:
+            feedback = "💪 Good effort! Keep exploring and learning more about Rigveda!"
+        else:
+            feedback = "📚 Don't worry! Learning takes time. Let's continue our Rigveda journey together!"
+        
+        return jsonify({
+            'score': correct_count,
+            'total': total_questions,
+            'percentage': score_percentage,
+            'feedback': feedback,
+            'results': results,
+            'session_id': session_id
+        })
+        
+    except Exception as e:
+        print(f"Error submitting quiz: {e}")
+        return jsonify({'error': 'Failed to submit quiz'}), 500
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
@@ -188,14 +444,16 @@ def health_check():
     status = {
         'status': 'healthy' if (index is not None and verses is not None) else 'degraded',
         'database_loaded': index is not None and verses is not None,
-        'total_verses': len(verses) if verses else 0
+        'total_verses': len(verses) if verses else 0,
+        'active_conversations': len(conversations)
     }
     return jsonify(status)
 
 if __name__ == '__main__':
-    print("🚀 Starting Rigveda Chatbot Server...")
+    print("🚀 Starting Enhanced Rigveda Chatbot Server with Quiz Feature...")
     print("📚 Make sure your database files are in ./databse/ directory")
     print("🌐 Frontend will be available at http://localhost:5000")
     print("🔌 API available at http://localhost:5000/api/ask")
+    print("🧠 Quiz API available at http://localhost:5000/api/generate-quiz")
     
     app.run(debug=True, host='0.0.0.0', port=5000)
