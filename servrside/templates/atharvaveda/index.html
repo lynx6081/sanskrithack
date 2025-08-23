@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atharvaveda Wisdom - Practical Knowledge & Interactive Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #27ae60 0%, #2d8659 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .main-container {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 1400px;
+            height: 80vh;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .chat-container {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e0e6ed;
+        }
+
+        .quiz-sidebar {
+            flex: 1;
+            min-width: 350px;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(145deg, #f0fff4, #e0f2e0);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #27ae60, #2d8659);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 5 Q70 20 85 50 Q70 80 50 95 Q30 80 15 50 Q30 20 50 5 Z" fill="rgba(255,255,255,0.1)"/><circle cx="30" cy="30" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="70" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="70" r="1" fill="rgba(255,255,255,0.1)"/><path d="M20 60 L25 65 L35 55" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none"/></svg>');
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(180deg); }
+            100% { transform: translateY(0px) rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quiz-header {
+            background: linear-gradient(135deg, #27ae60, #2d8659);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .quiz-header h2 {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .quiz-header p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: linear-gradient(145deg, #f0fff4, #e0f2e0);
+        }
+
+        .quiz-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 25px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            text-align: right;
+        }
+
+        .user-bubble {
+            display: inline-block;
+            background: linear-gradient(135deg, #27ae60, #2d8659);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 25px 25px 5px 25px;
+            max-width: 70%;
+            font-size: 1.05em;
+            line-height: 1.5;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .bot-message {
+            text-align: left;
+        }
+
+        .bot-bubble {
+            display: inline-block;
+            background: white;
+            color: #2c3e50;
+            padding: 20px 25px;
+            border-radius: 25px 25px 25px 5px;
+            max-width: 85%;
+            font-size: 1.05em;
+            line-height: 1.6;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #27ae60;
+        }
+
+        .verse-reference {
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 500;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: rgba(39, 174, 96, 0.1);
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .input-container {
+            padding: 25px 30px;
+            background: white;
+            border-top: 1px solid #e0e6ed;
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        #userInput {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e6ed;
+            border-radius: 25px;
+            font-size: 1.05em;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #f0fff4;
+            min-height: 50px;
+            resize: none;
+            font-family: inherit;
+        }
+
+        #userInput:focus {
+            border-color: #27ae60;
+            background: white;
+            box-shadow: 0 0 20px rgba(39, 174, 96, 0.2);
+        }
+
+        #userInput::placeholder {
+            color: #999;
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #2d8659, #16a085);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(45, 134, 89, 0.3);
+        }
+
+        .send-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 134, 89, 0.4);
+        }
+
+        .send-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #27ae60;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .example-queries {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .example-query {
+            background: linear-gradient(135deg, #27ae60, #2d8659);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .example-query:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        /* Quiz Styles */
+        .quiz-notification {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .quiz-waiting {
+            text-align: center;
+            color: #666;
+            padding: 40px 20px;
+            font-style: italic;
+        }
+
+        .quiz-question {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-text {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            line-height: 1.4;
+        }
+
+        .quiz-option {
+            background: #f0fff4;
+            border: 2px solid #e0e6ed;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+            text-align: left;
+        }
+
+        .quiz-option:hover {
+            border-color: #27ae60;
+            background: white;
+        }
+
+        .quiz-option.selected {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+
+        .quiz-option.correct {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+
+        .quiz-option.incorrect {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .quiz-submit-btn {
+            background: linear-gradient(135deg, #27ae60, #2d8659);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .quiz-submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+
+        .quiz-submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .quiz-results {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .quiz-score {
+            font-size: 2em;
+            font-weight: 700;
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .quiz-feedback {
+            font-size: 1.1em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .new-quiz-btn {
+            background: linear-gradient(135deg, #16a085, #3498db);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .new-quiz-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(22, 160, 133, 0.3);
+        }
+
+        .explanation-text {
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: #f0fff4;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+                height: 90vh;
+            }
+            
+            .chat-container {
+                border-right: none;
+                border-bottom: 1px solid #e0e6ed;
+                flex: 1;
+            }
+            
+            .quiz-sidebar {
+                min-width: unset;
+                max-width: unset;
+                max-height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px;
+                border-radius: 16px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .chat-messages {
+                padding: 20px;
+            }
+            
+            .input-container {
+                padding: 20px;
+            }
+            
+            .user-bubble, .bot-bubble {
+                max-width: 90%;
+                padding: 12px 16px;
+            }
+
+            .quiz-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Chat Section -->
+        <div class="chat-container">
+            <div class="header">
+                <h1>🌿 Atharvaveda Guru</h1>
+                <p>Your guide to practical wisdom & healing knowledge</p>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will be loaded here -->
+            </div>
+            
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <textarea 
+                        id="userInput" 
+                        placeholder="Ask me about Atharvaveda practices! (e.g., 'How were diseases healed?' or 'What are protective charms?')"
+                        rows="1"
+                        maxlength="500"
+                    ></textarea>
+                </div>
+                <button class="send-button" id="sendButton" onclick="sendMessage()">
+                    <span id="sendIcon">➤</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Sidebar -->
+        <div class="quiz-sidebar">
+            <div class="quiz-header">
+                <h2>🧠 Practical Knowledge Quiz</h2>
+                <p>Test your Atharvaveda understanding</p>
+            </div>
+            
+            <div class="quiz-content" id="quizContent">
+                <div class="quiz-waiting">
+                    <p>🌿 Continue our conversation and I'll create personalized quizzes based on the practical wisdom we explore!</p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">Quiz will appear after every few exchanges 📚</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isLoading = false;
+        let conversationStarted = false;
+        let sessionId = 'atharvaveda_session_' + Math.random().toString(36).substr(2, 9);
+        let currentQuiz = null;
+        let userAnswers = {};
+
+        // Auto-resize textarea
+        document.getElementById('userInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        // Send message on Enter (but allow Shift+Enter for new lines)
+        document.getElementById('userInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Initialize conversation with tutor introduction
+        async function initializeConversation() {
+            if (conversationStarted) return;
+            
+            setLoading(true);
+            
+            try {
+                const response = await fetch('/api/atharvaveda/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        query: '',
+                        is_intro: true,
+                        session_id: sessionId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                addMessage(data.answer, 'bot', null, true);
+                conversationStarted = true;
+
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Namaste! I\'m your Atharvaveda tutor and I\'m excited to guide you through the practical wisdom of healing, protection, and daily life practices found in this ancient text! What would you like to explore today?', 'bot', null, true);
+                conversationStarted = true;
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function handleTopicClick(topic) {
+            const topicQueries = {
+                'Healing & Medicine': 'Tell me about ancient healing practices and medical knowledge in Atharvaveda',
+                'Protective Charms': 'What protective spells and charms are found in Atharvaveda?',
+                'Daily Life Practices': 'What household rituals and daily customs are described in Atharvaveda?',
+                'Agricultural Wisdom': 'How did Atharvaveda guide farming and seasonal practices?',
+                'Life Events': 'What ceremonies for marriage, birth, and social events are in Atharvaveda?',
+                'Magical Formulas': 'What are the purposes of various spells and magical formulas?',
+                'Practical Knowledge': 'How can Atharvaveda wisdom be applied to everyday life?',
+                'Cultural Traditions': 'How did Atharvaveda shape daily customs and traditions?'
+            };
+            
+            const query = topicQueries[topic] || `Tell me about ${topic} in Atharvaveda`;
+            document.getElementById('userInput').value = query;
+            sendMessage();
+        }
+
+        function askFollowUp(question) {
+            document.getElementById('userInput').value = question;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            if (isLoading) return;
+
+            const input = document.getElementById('userInput');
+            const query = input.value.trim();
+            
+            if (!query) return;
+
+            // Clear input and show loading
+            input.value = '';
+            input.style.height = 'auto';
+            setLoading(true);
+
+            // Add user message
+            addMessage(query, 'user');
+
+            try {
+                // Call backend API
+                const response = await fetch('/api/atharvaveda/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        query: query,
+                        topk: 5,
+                        session_id: sessionId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Add bot response
+                addMessage(data.answer, 'bot', data.verses);
+
+                // Check if quiz should be triggered
+                if (data.quiz_triggered) {
+                    showQuizNotification();
+                    setTimeout(() => generateQuiz(), 2000);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('I apologize, dear student! I encountered a technical issue. Please try asking your question again, and I\'ll be happy to help you explore the practical wisdom of Atharvaveda!', 'bot');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function addMessage(text, sender, verses = null, isIntro = false) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+
+            if (sender === 'user') {
+                messageDiv.innerHTML = `<div class="user-bubble">${escapeHtml(text)}</div>`;
+            } else {
+                let versesHtml = '';
+                if (verses && verses.length > 0) {
+                    versesHtml = '<div style="margin-top: 15px; font-size: 0.9em; color: #666;">' +
+                        verses.map(v => 
+                            `<div class="verse-reference">📜 AV ${v.kanda}.${v.sukta}.${v.verse}</div>`
+                        ).join('') + '</div>';
+                }
+                
+                messageDiv.innerHTML = `
+                    <div class="bot-bubble">
+                        ${formatMessage(text, isIntro)}
+                        ${versesHtml}
+                    </div>
+                `;
+            }
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function formatMessage(text, isIntro = false) {
+            let processedText = text;
+            
+            if (isIntro) {
+                // Convert topic buttons to actual HTML buttons
+                processedText = processedText
+                    .replace(/🌿 \*\*Healing & Medicine\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Healing & Medicine\')">🌿 <strong>Healing & Medicine</strong></button>')
+                    .replace(/🛡️ \*\*Protective Charms\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Protective Charms\')">🛡️ <strong>Protective Charms</strong></button>')
+                    .replace(/🏠 \*\*Daily Life Practices\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Daily Life Practices\')">🏠 <strong>Daily Life Practices</strong></button>')
+                    .replace(/🌾 \*\*Agricultural Wisdom\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Agricultural Wisdom\')">🌾 <strong>Agricultural Wisdom</strong></button>')
+                    .replace(/💑 \*\*Life Events\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Life Events\')">💑 <strong>Life Events</strong></button>')
+                    .replace(/🔮 \*\*Magical Formulas\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Magical Formulas\')">🔮 <strong>Magical Formulas</strong></button>')
+                    .replace(/📚 \*\*Practical Knowledge\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Practical Knowledge\')">📚 <strong>Practical Knowledge</strong></button>')
+                    .replace(/🌟 \*\*Cultural Traditions\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Cultural Traditions\')">🌟 <strong>Cultural Traditions</strong></button>');
+            }
+            
+            // Handle follow-up questions format
+            const followUpRegex = /\*\*Follow-up Questions:\*\*\s*\n((?:• .+\?\s*\n?)+)/;
+            const followUpMatch = processedText.match(followUpRegex);
+            
+            if (followUpMatch) {
+                const questionsText = followUpMatch[1];
+                const questions = questionsText.split('\n').filter(q => q.trim().startsWith('•'));
+                
+                let buttonsHtml = '<div style="margin-top: 15px;"><strong>Follow-up Questions:</strong><br><div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px;">';
+                
+                questions.forEach(q => {
+                    const questionText = q.replace('•', '').trim();
+                    if (questionText) {
+                        buttonsHtml += `<button class="example-query" onclick="askFollowUp('${questionText.replace(/'/g, "\\'")}')">• ${questionText}</button>`;
+                    }
+                });
+                
+                buttonsHtml += '</div></div>';
+                processedText = processedText.replace(followUpRegex, buttonsHtml);
+            }
+            
+            // Convert markdown formatting to HTML
+            return processedText
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/🌿/g, '<span style="color: #27ae60; font-size: 1.2em;">🌿</span>')
+                .replace(/🌟/g, '<span style="color: #f39c12;">🌟</span>')
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n/g, '<br>');
+        }
+
+        function setLoading(loading) {
+            isLoading = loading;
+            const sendButton = document.getElementById('sendButton');
+            const sendIcon = document.getElementById('sendIcon');
+            
+            if (loading) {
+                sendIcon.innerHTML = '<div class="loading"></div>';
+                sendButton.disabled = true;
+            } else {
+                sendIcon.innerHTML = '➤';
+                sendButton.disabled = false;
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Quiz Functions
+        function showQuizNotification() {
+            const quizContent = document.getElementById('quizContent');
+            quizContent.innerHTML = `
+                <div class="quiz-notification">
+                    <h3>🎯 Practical Quiz Time!</h3>
+                    <p>I'm preparing personalized questions based on our wisdom conversation...</p>
+                </div>
+            `;
+        }
+
+        async function generateQuiz() {
+            try {
+                const response = await fetch('/api/generate-quiz', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        session_id: sessionId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                currentQuiz = data.quiz;
+                userAnswers = {};
+                displayQuiz(data.quiz, data.topics);
+
+            } catch (error) {
+                console.error('Error generating quiz:', error);
+                const quizContent = document.getElementById('quizContent');
+                quizContent.innerHTML = `
+                    <div class="quiz-waiting">
+                        <p>🌿 Continue our practical exploration to unlock more quizzes!</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayQuiz(quiz, topics) {
+            const quizContent = document.getElementById('quizContent');
+            
+            let questionsHtml = quiz.questions.map((question, index) => `
+                <div class="quiz-question">
+                    <div class="question-text">${index + 1}. ${question.question}</div>
+                    ${Object.entries(question.options).map(([key, value]) => `
+                        <button class="quiz-option" onclick="selectOption(${index}, '${key}', this)">
+                            <strong>${key}:</strong> ${value}
+                        </button>
+                    `).join('')}
+                </div>
+            `).join('');
+
+            quizContent.innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <h3 style="color: #27ae60; margin-bottom: 5px;">🔍 Quiz Topics:</h3>
+                    <p style="font-size: 0.9em; color: #666;">${topics.join(', ')}</p>
+                </div>
+                ${questionsHtml}
+                <button class="quiz-submit-btn" onclick="submitQuiz()" disabled>
+                    Submit Quiz 🎯
+                </button>
+            `;
+        }
+
+        function selectOption(questionIndex, option, buttonElement) {
+            // Clear previous selection for this question
+            const questionDiv = buttonElement.parentElement;
+            questionDiv.querySelectorAll('.quiz-option').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Mark current selection
+            buttonElement.classList.add('selected');
+            userAnswers[questionIndex.toString()] = option;
+            
+            // Check if all questions are answered
+            const totalQuestions = currentQuiz ? currentQuiz.questions.length : 0;
+            const submitBtn = document.querySelector('.quiz-submit-btn');
+            if (Object.keys(userAnswers).length === totalQuestions) {
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function submitQuiz() {
+            if (!currentQuiz) return;
+
+            try {
+                const response = await fetch('/api/submit-quiz', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        answers: userAnswers,
+                        quiz_questions: currentQuiz.questions
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                displayQuizResults(data);
+
+            } catch (error) {
+                console.error('Error submitting quiz:', error);
+                alert('Failed to submit quiz. Please try again.');
+            }
+        }
+
+        function displayQuizResults(results) {
+            const quizContent = document.getElementById('quizContent');
+            
+            let resultsHtml = results.results.map((result, index) => {
+                const userAnswerText = currentQuiz.questions[index].options[result.user_answer] || 'No answer';
+                const correctAnswerText = currentQuiz.questions[index].options[result.correct_answer];
+                
+                return `
+                    <div class="quiz-question">
+                        <div class="question-text">${index + 1}. ${result.question}</div>
+                        <div style="margin: 10px 0;">
+                            <div style="color: ${result.is_correct ? '#27ae60' : '#e74c3c'}; font-weight: 600;">
+                                Your answer: ${result.user_answer}: ${userAnswerText}
+                                ${result.is_correct ? '✅' : '❌'}
+                            </div>
+                            ${!result.is_correct ? `
+                                <div style="color: #27ae60; font-weight: 600; margin-top: 5px;">
+                                    Correct answer: ${result.correct_answer}: ${correctAnswerText} ✅
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="explanation-text">
+                            💡 ${result.explanation}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            quizContent.innerHTML = `
+                <div class="quiz-results">
+                    <div class="quiz-score">${results.score}/${results.total}</div>
+                    <div class="quiz-feedback">${results.feedback}</div>
+                    <div style="font-size: 1.1em; color: #27ae60; font-weight: 600;">
+                        Score: ${Math.round(results.percentage)}%
+                    </div>
+                    <button class="new-quiz-btn" onclick="resetQuizArea()">
+                        Continue Learning 📚
+                    </button>
+                </div>
+                ${resultsHtml}
+            `;
+        }
+
+        function resetQuizArea() {
+            const quizContent = document.getElementById('quizContent');
+            quizContent.innerHTML = `
+                <div class="quiz-waiting">
+                    <p>🌿 Excellent work! Continue our practical conversation and I'll create more personalized quizzes!</p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">Keep exploring Atharvavedic practical wisdom 🌟</p>
+                </div>
+            `;
+            currentQuiz = null;
+            userAnswers = {};
+        }
+
+        // Initialize conversation when page loads
+        window.addEventListener('load', () => {
+            initializeConversation();
+            document.getElementById('userInput').focus();
+        });
+    </script>
+</body>
+</html>

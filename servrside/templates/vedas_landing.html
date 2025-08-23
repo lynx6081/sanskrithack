@@ -187,9 +187,9 @@
             border-left: 5px solid #27ae60;
         }
 
-        .veda-card.coming-soon {
-            opacity: 0.7;
-            border-left: 5px solid #f39c12;
+        .veda-card.loading {
+            opacity: 0.8;
+            border-left: 5px solid #3498db;
         }
 
         .veda-icon {
@@ -239,7 +239,7 @@
         }
 
         .action-button {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -254,22 +254,18 @@
             max-width: 200px;
         }
 
-        .action-button.available {
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
-        }
-
-        .action-button.coming-soon {
-            background: linear-gradient(135deg, #f39c12, #e67e22);
-            cursor: not-allowed;
-        }
-
-        .action-button:hover:not(.coming-soon) {
+        .action-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.4);
         }
 
-        .action-button.available:hover {
-            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.4);
+        .action-button.loading {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            cursor: wait;
+        }
+
+        .action-button.loading:hover {
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.4);
         }
 
         .status-badge {
@@ -288,9 +284,16 @@
             color: white;
         }
 
-        .badge-coming-soon {
-            background: #f39c12;
+        .badge-loading {
+            background: #3498db;
             color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .footer {
@@ -311,6 +314,24 @@
             line-height: 1.6;
             max-width: 600px;
             margin: 0 auto;
+        }
+
+        .status-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .status-indicator.show {
+            opacity: 1;
         }
 
         @keyframes fadeIn {
@@ -376,18 +397,23 @@
     <!-- Cosmic Background -->
     <div class="cosmic-background" id="cosmicBg"></div>
     
+    <!-- Status Indicator -->
+    <div class="status-indicator" id="statusIndicator">
+        Checking Veda availability...
+    </div>
+    
     <div class="container">
         <!-- Header -->
         <header class="header">
             <h1 class="main-title">🕉️ Vedic Wisdom Hub</h1>
             <p class="subtitle">Journey Through Ancient Sacred Knowledge</p>
-            <p class="tagline">Choose your path to enlightenment and discover timeless wisdom</p>
+            <p class="tagline">All four Vedas are now available - Choose your path to enlightenment</p>
         </header>
 
         <!-- Vedas Grid -->
         <div class="vedas-grid">
             <!-- Rigveda Card -->
-            <div class="veda-card available" onclick="navigateToVeda('rigveda')">
+            <div class="veda-card available" onclick="navigateToVeda('rigveda')" data-veda="rigveda">
                 <span class="status-badge badge-available">Available</span>
                 <div class="veda-icon">🔥</div>
                 <h2 class="veda-title">Rigveda</h2>
@@ -412,8 +438,8 @@
             </div>
 
             <!-- Samaveda Card -->
-            <div class="veda-card coming-soon" onclick="showComingSoon('Samaveda')">
-                <span class="status-badge badge-coming-soon">Coming Soon</span>
+            <div class="veda-card available" onclick="navigateToVeda('samaveda')" data-veda="samaveda">
+                <span class="status-badge badge-available">Available</span>
                 <div class="veda-icon">🎵</div>
                 <h2 class="veda-title">Samaveda</h2>
                 <p class="veda-description">
@@ -433,12 +459,12 @@
                         <div class="stat-label">From Rigveda</div>
                     </div>
                 </div>
-                <button class="action-button coming-soon">Coming Soon 🎼</button>
+                <button class="action-button available">Start Learning 🎼</button>
             </div>
 
             <!-- Yajurveda Card -->
-            <div class="veda-card coming-soon" onclick="showComingSoon('Yajurveda')">
-                <span class="status-badge badge-coming-soon">Coming Soon</span>
+            <div class="veda-card available" onclick="navigateToVeda('yajurveda')" data-veda="yajurveda">
+                <span class="status-badge badge-available">Available</span>
                 <div class="veda-icon">🔱</div>
                 <h2 class="veda-title">Yajurveda</h2>
                 <p class="veda-description">
@@ -458,12 +484,12 @@
                         <div class="stat-label">Versions</div>
                     </div>
                 </div>
-                <button class="action-button coming-soon">Coming Soon ⚡</button>
+                <button class="action-button available">Start Learning ⚡</button>
             </div>
 
             <!-- Atharvaveda Card -->
-            <div class="veda-card coming-soon" onclick="showComingSoon('Atharvaveda')">
-                <span class="status-badge badge-coming-soon">Coming Soon</span>
+            <div class="veda-card available" onclick="navigateToVeda('atharvaveda')" data-veda="atharvaveda">
+                <span class="status-badge badge-available">Available</span>
                 <div class="veda-icon">🌿</div>
                 <h2 class="veda-title">Atharvaveda</h2>
                 <p class="veda-description">
@@ -483,15 +509,15 @@
                         <div class="stat-label">Verses</div>
                     </div>
                 </div>
-                <button class="action-button coming-soon">Coming Soon 🌱</button>
+                <button class="action-button available">Start Learning 🌱</button>
             </div>
         </div>
 
         <!-- Footer -->
         <footer class="footer">
-            <h3>🌟 Begin Your Vedic Journey Today</h3>
+            <h3>🌟 Begin Your Complete Vedic Journey Today</h3>
             <p>
-                Immerse yourself in the timeless wisdom of ancient India. Our AI-powered tutors make these sacred texts accessible to modern learners, providing personalized guidance and interactive quizzes to deepen your understanding.
+                Immerse yourself in the complete wisdom of ancient India. All four Vedas are now available with AI-powered tutors, personalized guidance, and interactive quizzes to deepen your understanding of this sacred knowledge.
             </p>
         </footer>
     </div>
@@ -541,33 +567,88 @@
             }, 1000);
         }
 
-        // Navigation functions
-        function navigateToVeda(vedaName) {
-            if (vedaName === 'rigveda') {
-                // Add loading animation
-                const card = event.currentTarget;
-                card.style.transform = 'scale(0.95)';
-                card.style.opacity = '0.8';
+        // Check Veda availability status
+        async function checkVedaStatus() {
+            try {
+                const response = await fetch('/api/veda-status');
+                const status = await response.json();
                 
-                // Show loading message
-                const button = card.querySelector('.action-button');
-                const originalText = button.textContent;
-                button.textContent = 'Loading... ⏳';
+                let allAvailable = true;
+                let statusMessage = '';
                 
-                // Navigate after brief delay for smooth transition
-                setTimeout(() => {
-                    // In a real app, this would navigate to your Rigveda tutor
-                    // For now, we'll redirect to the current Rigveda tutor endpoint
-                    window.location.href = '/rigveda'; // or your actual Rigveda tutor URL
+                // Update each Veda card based on status
+                Object.entries(status).forEach(([veda, vedaStatus]) => {
+                    const card = document.querySelector(`[data-veda="${veda}"]`);
+                    if (!card) return;
                     
-                    // If you want to open in new tab instead:
-                    // window.open('/rigveda', '_blank');
-                }, 1000);
+                    const badge = card.querySelector('.status-badge');
+                    const button = card.querySelector('.action-button');
+                    
+                    if (vedaStatus.fully_functional) {
+                        card.className = 'veda-card available';
+                        badge.className = 'status-badge badge-available';
+                        badge.textContent = 'Available';
+                        button.className = 'action-button available';
+                        button.textContent = button.textContent.replace('Loading...', 'Start Learning');
+                    } else {
+                        card.className = 'veda-card loading';
+                        badge.className = 'status-badge badge-loading';
+                        badge.textContent = 'Loading...';
+                        button.className = 'action-button loading';
+                        button.textContent = button.textContent.replace('Start Learning', 'Loading...');
+                        allAvailable = false;
+                    }
+                });
+                
+                // Update status indicator
+                const statusIndicator = document.getElementById('statusIndicator');
+                if (allAvailable) {
+                    statusMessage = '✅ All Vedas are ready!';
+                    setTimeout(() => {
+                        statusIndicator.classList.remove('show');
+                    }, 3000);
+                } else {
+                    statusMessage = '⚠️ Some Vedas are still loading...';
+                }
+                
+                statusIndicator.textContent = statusMessage;
+                statusIndicator.classList.add('show');
+                
+            } catch (error) {
+                console.error('Error checking Veda status:', error);
+                const statusIndicator = document.getElementById('statusIndicator');
+                statusIndicator.textContent = '❌ Unable to check status';
+                statusIndicator.classList.add('show');
             }
         }
 
-        function showComingSoon(vedaName) {
-            // Create and show coming soon modal
+        // Navigation functions
+        function navigateToVeda(vedaName) {
+            const card = event.currentTarget;
+            const button = card.querySelector('.action-button');
+            
+            // Check if the Veda is actually available
+            if (card.classList.contains('loading')) {
+                showLoadingMessage(vedaName);
+                return;
+            }
+            
+            // Add loading animation
+            card.style.transform = 'scale(0.95)';
+            card.style.opacity = '0.8';
+            
+            // Show loading message
+            const originalText = button.textContent;
+            button.textContent = 'Loading... ⏳';
+            
+            // Navigate after brief delay for smooth transition
+            setTimeout(() => {
+                window.location.href = `/${vedaName}`;
+            }, 1000);
+        }
+
+        function showLoadingMessage(vedaName) {
+            // Create and show loading modal
             const modal = document.createElement('div');
             modal.innerHTML = `
                 <div style="
@@ -593,15 +674,23 @@
                         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
                         animation: slideInUp 0.5s ease-out;
                     ">
-                        <h2 style="color: #f39c12; margin-bottom: 20px; font-size: 2em;">
-                            🚧 ${vedaName} Coming Soon!
+                        <h2 style="color: #3498db; margin-bottom: 20px; font-size: 2em;">
+                            ⚡ ${vedaName.charAt(0).toUpperCase() + vedaName.slice(1)} Loading!
                         </h2>
                         <p style="color: #666; font-size: 1.1em; line-height: 1.6; margin-bottom: 25px;">
-                            We're working hard to bring you an amazing ${vedaName} learning experience with AI-powered tutoring and interactive quizzes. 
+                            The ${vedaName.charAt(0).toUpperCase() + vedaName.slice(1)} tutor is initializing. This may take a moment as we prepare your personalized learning experience.
                         </p>
-                        <p style="color: #667eea; font-weight: 600; margin-bottom: 30px;">
-                            🔔 Get notified when it's ready!
-                        </p>
+                        <div style="margin: 20px 0;">
+                            <div style="
+                                width: 40px;
+                                height: 40px;
+                                border: 4px solid #e3f2fd;
+                                border-top: 4px solid #3498db;
+                                border-radius: 50%;
+                                animation: spin 1s linear infinite;
+                                margin: 0 auto;
+                            "></div>
+                        </div>
                         <button onclick="this.parentElement.parentElement.remove()" style="
                             background: linear-gradient(135deg, #667eea, #764ba2);
                             color: white;
@@ -612,10 +701,16 @@
                             cursor: pointer;
                             transition: transform 0.3s ease;
                         " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                            Got it! ✨
+                            I'll wait ✨
                         </button>
                     </div>
                 </div>
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
             `;
             
             document.body.appendChild(modal);
@@ -649,9 +744,13 @@
         window.addEventListener('load', () => {
             createCosmicBackground();
             addHoverEffects();
+            checkVedaStatus();
             
             // Add smooth scrolling for better UX
             document.documentElement.style.scrollBehavior = 'smooth';
+            
+            // Refresh status every 30 seconds
+            setInterval(checkVedaStatus, 30000);
         });
 
         // Add keyboard navigation
