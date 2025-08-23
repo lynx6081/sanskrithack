@@ -36,7 +36,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            background: linear-gradient(135deg, #ff9a56, #ff6b6b);
             color: white;
             padding: 25px 30px;
             text-align: center;
@@ -301,28 +301,19 @@
 <body>
     <div class="chat-container">
         <div class="header">
-            <h1>🕉️ Rigveda Wisdom</h1>
-            <p>Discover ancient knowledge through AI-powered search</p>
+            <h1>🕉️ Rigveda Guru</h1>
+            <p>Your passionate guide to ancient wisdom & timeless knowledge</p>
         </div>
         
         <div class="chat-messages" id="chatMessages">
-            <div class="welcome-message">
-                <h3>Welcome to Rigveda Wisdom</h3>
-                <p>Ask me anything about the Rigveda and I'll search through ancient verses to provide you with authentic answers. Each response includes relevant verse references.</p>
-                <div class="example-queries">
-                    <button class="example-query" onclick="askExample('What does Rigveda say about Agni?')">About Agni</button>
-                    <button class="example-query" onclick="askExample('What is the nature of Indra?')">About Indra</button>
-                    <button class="example-query" onclick="askExample('What does Rigveda say about creation?')">About Creation</button>
-                    <button class="example-query" onclick="askExample('What is soma in Rigveda?')">About Soma</button>
-                </div>
-            </div>
+            <!-- Initial messages will be loaded here -->
         </div>
         
         <div class="input-container">
             <div class="input-wrapper">
                 <textarea 
                     id="userInput" 
-                    placeholder="Ask about Rigvedic wisdom... (e.g., 'What does Rigveda say about dharma?')"
+                    placeholder="Ask me anything about Rigveda! (e.g., 'What is dharma?' or 'Tell me about Agni')"
                     rows="1"
                     maxlength="500"
                 ></textarea>
@@ -335,6 +326,7 @@
 
     <script>
         let isLoading = false;
+        let conversationStarted = false;
 
         // Auto-resize textarea
         document.getElementById('userInput').addEventListener('input', function() {
@@ -350,7 +342,52 @@
             }
         });
 
-        function askExample(query) {
+        // Initialize conversation with tutor introduction
+        async function initializeConversation() {
+            if (conversationStarted) return;
+            
+            setLoading(true);
+            
+            try {
+                const response = await fetch('/api/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        query: '',
+                        is_intro: true
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                addMessage(data.answer, 'bot', null, true);
+                conversationStarted = true;
+
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Namaste! I\'m your Rigveda tutor and I\'m excited to teach you about ancient wisdom! What would you like to learn today?', 'bot', null, true);
+                conversationStarted = true;
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function handleTopicClick(topic) {
+            const topicQueries = {
+                'Fire & Agni': 'Tell me about Agni and the importance of fire in Rigveda',
+                'Indra the Mighty': 'Who is Indra and what are his powers according to Rigveda?',
+                'Soma & Sacred Rituals': 'What is soma and how were rituals performed in Rigvedic times?',
+                'Creation Stories': 'How was the universe created according to Rigveda?',
+                'Hymns & Poetry': 'What makes Rigvedic hymns special and beautiful?',
+                'Dharma & Ethics': 'What does Rigveda teach about dharma and righteous living?'
+            };
+            
+            const query = topicQueries[topic] || `Tell me about ${topic}`;
             document.getElementById('userInput').value = query;
             sendMessage();
         }
@@ -380,7 +417,7 @@
                     },
                     body: JSON.stringify({ 
                         query: query,
-                        topk: 5  // You can make this configurable
+                        topk: 5
                     })
                 });
 
@@ -395,13 +432,13 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                addMessage('Sorry, I encountered an error while searching the Rigveda. Please try again.', 'bot');
+                addMessage('I apologize, dear student! I encountered a technical issue. Please try asking your question again, and I\'ll be happy to help you explore the Rigveda!', 'bot');
             } finally {
                 setLoading(false);
             }
         }
 
-        function addMessage(text, sender, verses = null) {
+        function addMessage(text, sender, verses = null, isIntro = false) {
             const messagesContainer = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}-message`;
@@ -411,13 +448,15 @@
             } else {
                 let versesHtml = '';
                 if (verses && verses.length > 0) {
-                    versesHtml = verses.map(v => 
-                        `<div class="verse-reference">RV ${v.mandala}.${v.sukta}.${v.verse}</div>`
-                    ).join('');
+                    versesHtml = '<div style="margin-top: 15px; font-size: 0.9em; color: #666;">' +
+                        verses.map(v => 
+                            `<div class="verse-reference">📜 RV ${v.mandala}.${v.sukta}.${v.verse}</div>`
+                        ).join('') + '</div>';
                 }
+                
                 messageDiv.innerHTML = `
                     <div class="bot-bubble">
-                        ${escapeHtml(text)}
+                        ${formatMessage(text, isIntro)}
                         ${versesHtml}
                     </div>
                 `;
@@ -425,12 +464,31 @@
 
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
 
-            // Remove welcome message if it exists
-            const welcomeMessage = document.querySelector('.welcome-message');
-            if (welcomeMessage) {
-                welcomeMessage.remove();
+        function formatMessage(text, isIntro = false) {
+            // First escape the text but keep it as raw for processing
+            let processedText = text;
+            
+            if (isIntro) {
+                // Convert the topic buttons to actual HTML buttons
+                processedText = processedText
+                    .replace(/🔥 \*\*Fire & Agni\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Fire & Agni\')">🔥 <strong>Fire & Agni</strong></button>')
+                    .replace(/⚡ \*\*Indra the Mighty\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Indra the Mighty\')">⚡ <strong>Indra the Mighty</strong></button>')
+                    .replace(/🌙 \*\*Soma & Sacred Rituals\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Soma & Sacred Rituals\')">🌙 <strong>Soma & Sacred Rituals</strong></button>')
+                    .replace(/🌍 \*\*Creation Stories\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Creation Stories\')">🌍 <strong>Creation Stories</strong></button>')
+                    .replace(/🎵 \*\*Hymns & Poetry\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Hymns & Poetry\')">🎵 <strong>Hymns & Poetry</strong></button>')
+                    .replace(/⚖️ \*\*Dharma & Ethics\*\*/g, '<button class="example-query" onclick="handleTopicClick(\'Dharma & Ethics\')">⚖️ <strong>Dharma & Ethics</strong></button>');
             }
+            
+            // Convert markdown-style formatting to HTML
+            return processedText
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/🕉️/g, '<span style="color: #ff6b6b; font-size: 1.2em;">🕉️</span>')
+                .replace(/🌟/g, '<span style="color: #ffd700;">🌟</span>')
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n/g, '<br>');
         }
 
         function setLoading(loading) {
@@ -450,11 +508,12 @@
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
-            return div.innerHTML.replace(/\n/g, '<br>');
+            return div.innerHTML;
         }
 
-        // Focus input on load
+        // Initialize conversation when page loads
         window.addEventListener('load', () => {
+            initializeConversation();
             document.getElementById('userInput').focus();
         });
     </script>

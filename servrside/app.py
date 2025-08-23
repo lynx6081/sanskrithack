@@ -52,8 +52,33 @@ def search(query, topk=5):
     D, I = index.search(q, topk)
     return [(verses[i], float(D[0][j])) for j, i in enumerate(I[0])]
 
-def ask(query, topk=5, model="gpt-4o-mini"):
+def ask(query, topk=5, model="gpt-4o-mini", is_intro=False):
     """Get answer using RAG (Retrieval Augmented Generation)"""
+    
+    if is_intro:
+        # Special introduction message - no need to search
+        intro_response = """
+🕉️ **Namaste and welcome, dear seeker of wisdom!** 🕉️
+
+I am your passionate Rigveda tutor, and I'm absolutely thrilled that you've chosen to embark on this incredible journey into the world's oldest sacred text! The Rigveda is like a magnificent treasure chest filled with 3,500-year-old wisdom, beautiful hymns, and profound insights about life, nature, and the divine.
+
+Think of me as your friendly guide who will help you understand these ancient Sanskrit verses in the simplest way possible - whether you're 8 or 80 years old! 
+
+**What would you love to explore today?** Here are some fascinating topics we could dive into:
+
+🔥 **Fire & Agni** - Learn about the sacred fire god who connects earth and heaven
+⚡ **Indra the Mighty** - Discover the thunder god who defeats demons and brings rain  
+🌙 **Soma & Sacred Rituals** - Understand the mysterious divine drink and ceremonies
+🌍 **Creation Stories** - Explore how the universe began according to Rigvedic seers
+🎵 **Hymns & Poetry** - Appreciate the beautiful language and metaphors
+⚖️ **Dharma & Ethics** - Learn about righteous living and moral principles
+
+Just click on any topic above, or feel free to ask me anything that sparks your curiosity! I love questions like "Why is fire so important?" or "What makes Rigveda special?" - no question is too simple or too complex!
+
+**What shall we discover together today?** 🌟
+"""
+        return intro_response, []
+    
     # 1. Retrieve relevant verses
     results = search(query, topk=topk)
     
@@ -63,17 +88,31 @@ def ask(query, topk=5, model="gpt-4o-mini"):
         for r, _ in results
     ])
     
-    # 3. Create prompt for LLM
+    # 3. Create engaging tutor prompt
     prompt = f"""
-You are an expert on the Rigveda. Use ONLY the following verses to answer the question. 
-If the answer is not present in the verses, give the most relevant answer based on the the query.
+You are a passionate and enthusiastic Rigveda tutor who absolutely loves teaching about this ancient wisdom. Your goal is to make Rigvedic knowledge accessible and exciting for everyone - from curious children to adults seeking deeper understanding.
 
-Question: {query}
+Your personality:
+- Warm, friendly, and encouraging
+- Uses simple language but maintains depth
+- Gives examples and analogies that anyone can understand
+- Always follows up with engaging questions to keep the conversation going
+- Shows genuine excitement about sharing Rigvedic wisdom
+- Explains Sanskrit terms when used
+- Connects ancient wisdom to modern life
 
-Relevant Verses:
+Based on the following authentic Rigvedic verses, provide a comprehensive, engaging answer that:
+1. Explains the topic clearly and simply
+2. Uses analogies or examples when helpful
+3. Shares the cultural and spiritual significance
+4. Ends with a follow-up question to encourage deeper learning
+
+Student's Question: {query}
+
+Relevant Rigvedic Verses:
 {context}
 
-Answer:
+Provide your enthusiastic, educational response:
 """
     
     # 4. Get response from OpenAI
@@ -110,15 +149,16 @@ def api_ask():
         data = request.json
         query = data.get('query', '').strip()
         topk = data.get('topk', 5)
+        is_intro = data.get('is_intro', False)
         
-        if not query:
+        if not query and not is_intro:
             return jsonify({'error': 'Query is required'}), 400
         
-        if index is None or verses is None:
+        if not is_intro and (index is None or verses is None):
             return jsonify({'error': 'Database not loaded. Please check server configuration.'}), 500
         
         # Get answer and relevant verses
-        answer, relevant_verses = ask(query, topk=topk)
+        answer, relevant_verses = ask(query, topk=topk, is_intro=is_intro)
         
         # Format verse references for frontend
         verses_info = [
@@ -134,7 +174,8 @@ def api_ask():
         return jsonify({
             'answer': answer,
             'verses': verses_info,
-            'query': query
+            'query': query,
+            'is_intro': is_intro
         })
         
     except Exception as e:
