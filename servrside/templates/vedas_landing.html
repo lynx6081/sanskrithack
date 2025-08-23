@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vedic Wisdom Hub - Explore Ancient Knowledge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .cosmic-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        .star:nth-child(odd) {
+            animation-delay: 1.5s;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .floating-mandala {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            opacity: 0.1;
+            animation: float 15s infinite linear;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="white" stroke-width="2"/><circle cx="50" cy="50" r="30" fill="none" stroke="white" stroke-width="1"/><circle cx="50" cy="50" r="15" fill="none" stroke="white" stroke-width="1"/><path d="M50,5 L55,20 L50,35 L45,20 Z" fill="white"/><path d="M95,50 L80,55 L65,50 L80,45 Z" fill="white"/><path d="M50,95 L45,80 L50,65 L55,80 Z" fill="white"/><path d="M5,50 L20,45 L35,50 L20,55 Z" fill="white"/></svg>') center/contain no-repeat;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(90deg); }
+            50% { transform: translateY(0px) rotate(180deg); }
+            75% { transform: translateY(-20px) rotate(270deg); }
+            100% { transform: translateY(0px) rotate(360deg); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-title {
+            font-size: 4em;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #ffd89b, #19547b, #ff9a56);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 6s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.4em;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .tagline {
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .vedas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            margin-bottom: 50px;
+        }
+
+        .veda-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 1s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .veda-card:nth-child(1) { animation-delay: 0.2s; }
+        .veda-card:nth-child(2) { animation-delay: 0.4s; }
+        .veda-card:nth-child(3) { animation-delay: 0.6s; }
+        .veda-card:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .veda-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .veda-card:hover::before {
+            left: 100%;
+        }
+
+        .veda-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .veda-card.available {
+            border-left: 5px solid #27ae60;
+        }
+
+        .veda-card.coming-soon {
+            opacity: 0.7;
+            border-left: 5px solid #f39c12;
+        }
+
+        .veda-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: block;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+        }
+
+        .veda-title {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .veda-description {
+            font-size: 1.1em;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .veda-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .action-button.available {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .action-button.coming-soon {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            cursor: not-allowed;
+        }
+
+        .action-button:hover:not(.coming-soon) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-button.available:hover {
+            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.4);
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-available {
+            background: #27ae60;
+            color: white;
+        }
+
+        .badge-coming-soon {
+            background: #f39c12;
+            color: white;
+        }
+
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 40px;
+            animation: fadeIn 2s ease-out 1s both;
+        }
+
+        .footer h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .footer p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5em;
+            }
+            
+            .vedas-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 0 10px;
+            }
+            
+            .veda-card {
+                padding: 30px 20px;
+            }
+            
+            .veda-title {
+                font-size: 1.8em;
+            }
+            
+            .veda-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        /* Particle Effects */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: particleFloat 8s infinite linear;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cosmic Background -->
+    <div class="cosmic-background" id="cosmicBg"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="main-title">🕉️ Vedic Wisdom Hub</h1>
+            <p class="subtitle">Journey Through Ancient Sacred Knowledge</p>
+            <p class="tagline">Choose your path to enlightenment and discover timeless wisdom</p>
+        </header>
+
+        <!-- Vedas Grid -->
+        <div class="vedas-grid">
+            <!-- Rigveda Card -->
+            <div class="veda-card available" onclick="navigateToVeda('rigveda')">
+                <span class="status-badge badge-available">Available</span>
+                <div class="veda-icon">🔥</div>
+                <h2 class="veda-title">Rigveda</h2>
+                <p class="veda-description">
+                    The oldest and most sacred Veda, containing hymns to various deities, cosmic principles, and divine wisdom. Experience the foundation of Vedic knowledge.
+                </p>
+                <div class="veda-stats">
+                    <div class="stat">
+                        <div class="stat-number">1,028</div>
+                        <div class="stat-label">Hymns</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">10</div>
+                        <div class="stat-label">Mandalas</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">3,500</div>
+                        <div class="stat-label">Years Old</div>
+                    </div>
+                </div>
+                <button class="action-button available">Start Learning 🚀</button>
+            </div>
+
+            <!-- Samaveda Card -->
+            <div class="veda-card coming-soon" onclick="showComingSoon('Samaveda')">
+                <span class="status-badge badge-coming-soon">Coming Soon</span>
+                <div class="veda-icon">🎵</div>
+                <h2 class="veda-title">Samaveda</h2>
+                <p class="veda-description">
+                    The Veda of melodies and chants, containing musical arrangements of Rigvedic hymns. Discover the spiritual power of sacred sound and rhythm.
+                </p>
+                <div class="veda-stats">
+                    <div class="stat">
+                        <div class="stat-number">1,549</div>
+                        <div class="stat-label">Verses</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">2</div>
+                        <div class="stat-label">Sections</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">75%</div>
+                        <div class="stat-label">From Rigveda</div>
+                    </div>
+                </div>
+                <button class="action-button coming-soon">Coming Soon 🎼</button>
+            </div>
+
+            <!-- Yajurveda Card -->
+            <div class="veda-card coming-soon" onclick="showComingSoon('Yajurveda')">
+                <span class="status-badge badge-coming-soon">Coming Soon</span>
+                <div class="veda-icon">🔱</div>
+                <h2 class="veda-title">Yajurveda</h2>
+                <p class="veda-description">
+                    The Veda of rituals and procedures, containing mantras and instructions for ceremonies. Learn the sacred science of Vedic rituals and their meanings.
+                </p>
+                <div class="veda-stats">
+                    <div class="stat">
+                        <div class="stat-number">1,975</div>
+                        <div class="stat-label">Mantras</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">40</div>
+                        <div class="stat-label">Chapters</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">2</div>
+                        <div class="stat-label">Versions</div>
+                    </div>
+                </div>
+                <button class="action-button coming-soon">Coming Soon ⚡</button>
+            </div>
+
+            <!-- Atharvaveda Card -->
+            <div class="veda-card coming-soon" onclick="showComingSoon('Atharvaveda')">
+                <span class="status-badge badge-coming-soon">Coming Soon</span>
+                <div class="veda-icon">🌿</div>
+                <h2 class="veda-title">Atharvaveda</h2>
+                <p class="veda-description">
+                    The Veda of knowledge and daily life, containing hymns for healing, protection, and practical wisdom. Explore the intersection of spirituality and everyday living.
+                </p>
+                <div class="veda-stats">
+                    <div class="stat">
+                        <div class="stat-number">731</div>
+                        <div class="stat-label">Hymns</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">20</div>
+                        <div class="stat-label">Books</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">6,000</div>
+                        <div class="stat-label">Verses</div>
+                    </div>
+                </div>
+                <button class="action-button coming-soon">Coming Soon 🌱</button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <h3>🌟 Begin Your Vedic Journey Today</h3>
+            <p>
+                Immerse yourself in the timeless wisdom of ancient India. Our AI-powered tutors make these sacred texts accessible to modern learners, providing personalized guidance and interactive quizzes to deepen your understanding.
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Create cosmic background with stars and floating elements
+        function createCosmicBackground() {
+            const cosmicBg = document.getElementById('cosmicBg');
+            
+            // Create stars
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = star.style.height = (Math.random() * 3 + 1) + 'px';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                cosmicBg.appendChild(star);
+            }
+            
+            // Create floating mandalas
+            for (let i = 0; i < 8; i++) {
+                const mandala = document.createElement('div');
+                mandala.className = 'floating-mandala';
+                mandala.style.left = Math.random() * 100 + '%';
+                mandala.style.top = Math.random() * 100 + '%';
+                mandala.style.animationDelay = Math.random() * 15 + 's';
+                cosmicBg.appendChild(mandala);
+            }
+            
+            // Create floating particles
+            setInterval(() => {
+                if (document.querySelectorAll('.particle').length < 20) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 2 + 's';
+                    cosmicBg.appendChild(particle);
+                    
+                    // Remove particle after animation
+                    setTimeout(() => {
+                        if (particle.parentElement) {
+                            particle.remove();
+                        }
+                    }, 8000);
+                }
+            }, 1000);
+        }
+
+        // Navigation functions
+        function navigateToVeda(vedaName) {
+            if (vedaName === 'rigveda') {
+                // Add loading animation
+                const card = event.currentTarget;
+                card.style.transform = 'scale(0.95)';
+                card.style.opacity = '0.8';
+                
+                // Show loading message
+                const button = card.querySelector('.action-button');
+                const originalText = button.textContent;
+                button.textContent = 'Loading... ⏳';
+                
+                // Navigate after brief delay for smooth transition
+                setTimeout(() => {
+                    // In a real app, this would navigate to your Rigveda tutor
+                    // For now, we'll redirect to the current Rigveda tutor endpoint
+                    window.location.href = '/rigveda'; // or your actual Rigveda tutor URL
+                    
+                    // If you want to open in new tab instead:
+                    // window.open('/rigveda', '_blank');
+                }, 1000);
+            }
+        }
+
+        function showComingSoon(vedaName) {
+            // Create and show coming soon modal
+            const modal = document.createElement('div');
+            modal.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.8);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1000;
+                    animation: fadeIn 0.3s ease-out;
+                ">
+                    <div style="
+                        background: white;
+                        padding: 40px;
+                        border-radius: 20px;
+                        text-align: center;
+                        max-width: 500px;
+                        margin: 20px;
+                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                        animation: slideInUp 0.5s ease-out;
+                    ">
+                        <h2 style="color: #f39c12; margin-bottom: 20px; font-size: 2em;">
+                            🚧 ${vedaName} Coming Soon!
+                        </h2>
+                        <p style="color: #666; font-size: 1.1em; line-height: 1.6; margin-bottom: 25px;">
+                            We're working hard to bring you an amazing ${vedaName} learning experience with AI-powered tutoring and interactive quizzes. 
+                        </p>
+                        <p style="color: #667eea; font-weight: 600; margin-bottom: 30px;">
+                            🔔 Get notified when it's ready!
+                        </p>
+                        <button onclick="this.parentElement.parentElement.remove()" style="
+                            background: linear-gradient(135deg, #667eea, #764ba2);
+                            color: white;
+                            border: none;
+                            padding: 12px 30px;
+                            border-radius: 25px;
+                            font-size: 1.1em;
+                            cursor: pointer;
+                            transition: transform 0.3s ease;
+                        " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                            Got it! ✨
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Remove modal when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // Add hover sound effect (optional)
+        function addHoverEffects() {
+            const cards = document.querySelectorAll('.veda-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    // Add subtle scale effect
+                    if (card.classList.contains('available')) {
+                        card.style.transform = 'translateY(-10px) scale(1.02)';
+                    }
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        }
+
+        // Initialize everything when page loads
+        window.addEventListener('load', () => {
+            createCosmicBackground();
+            addHoverEffects();
+            
+            // Add smooth scrolling for better UX
+            document.documentElement.style.scrollBehavior = 'smooth';
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const focusedElement = document.activeElement;
+                if (focusedElement.classList.contains('veda-card')) {
+                    e.preventDefault();
+                    focusedElement.click();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
