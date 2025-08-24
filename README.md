@@ -37,7 +37,7 @@ python vedas_main_app.py <br>
 *run the file:* streamlit run audio_bot.py <br>
 
 **Usage:** 
-When you will run the vedas_main_app.py file, and then ctrl+click on the url, the main page will open.you can select whatever tutor u want and start interaction. You can either click on already provided topics or ask quuery of your own. <br>
+When you will run the vedas_main_app.py file, and then ctrl+click on the url, the main page will open.you can select whatever tutor you want and start interaction. You can either click on already provided topics or ask quuery of your own. <br>
 
 **Demo:**
 - Live Demo:
