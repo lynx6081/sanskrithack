@@ -7,3 +7,5 @@ openai
 dotenv
 flask
 flask-cors
+gTTS
+streamlit
