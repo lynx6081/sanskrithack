@@ -11,8 +11,8 @@ text_input = st.text_area("📝 Enter Sanskrit text:", "योगः कर्�
 if st.button("🔊 Generate Speech"):
     if text_input.strip():
         # Generate temporary audio file
-        # tts = gTTS(text=text_input, lang="sa", slow=False)
-        tts = gTTS(text=text_input, lang="hi", slow=False)
+        tts = gTTS(text=text_input, lang="sa", slow=False)
+        # tts = gTTS(text=text_input, lang="hi", slow=False)
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
         tts.save(temp_file.name)
         
