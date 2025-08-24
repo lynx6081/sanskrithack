@@ -40,7 +40,7 @@ python vedas_main_app.py <br>
 When you will run the vedas_main_app.py file, and then ctrl+click on the url, the main page will open.you can select whatever tutor you want and start interaction. You can either click on already provided topics or ask quuery of your own. <br>
 
 **Demo:**
-- Live Demo:
+- Live Demo:https://youtu.be/YbnblXgDScI?feature=shared
 
 **Future Improvements:** <br>
 - We will try to integrate other sanskrit data such as other literature texts, grammar texts, mythology texts, etc
