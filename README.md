@@ -19,8 +19,8 @@ We build AI powered Vedic Wisdom Hub that contains specialised chatbot as tutors
 
 **Getting Started:** <br>
 **1. Clone this repo** <br>
-git clone <br>
-cd your-repo-name <br>
+git clone https://github.com/lynx6081/sanskrithack.git<br>
+cd sanskrithack <br>
 **2. Install dependencies** <br>
 pip install -r requirements.txt <br>
 **3. Load api key:** <br>
